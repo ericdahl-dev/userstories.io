@@ -8,9 +8,7 @@ class Portal::SessionsController < ApplicationController
   end
 
   def create
-    collaborator = Collaborator.find_or_initialize_by(email: params[:email].to_s.strip.downcase)
-    collaborator.name ||= params[:email].split("@").first
-    collaborator.save!
+    collaborator = Collaborator.for_login(email: params[:email])
 
     token = collaborator.magic_tokens.create!
     CollaboratorMailer.magic_link(collaborator, token, @project).deliver_later
