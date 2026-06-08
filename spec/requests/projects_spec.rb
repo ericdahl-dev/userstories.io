@@ -75,6 +75,14 @@ RSpec.describe "Projects", type: :request do
           expect(response).to have_http_status(:ok)
           expect(response.body).to include("owner/repo-a")
           expect(response.body).to include("owner/repo-b")
+          expect(response.body).to include("Refresh list")
+        end
+
+        it "refreshes repo list via GET /projects/github_repos" do
+          get github_repos_projects_path, headers: { "Turbo-Frame" => "github_repos" }
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include('turbo-frame id="github_repos"')
+          expect(response.body).to include("owner/repo-a")
         end
       end
 

@@ -18,6 +18,13 @@ class ProjectsController < ApplicationController
     @github_repos = fetch_github_repos
   end
 
+  def github_repos
+    @project = Project.new
+    authorize @project, :create?
+    @github_repos = fetch_github_repos
+    render partial: "github_repo_field", locals: { project: @project, github_repos: @github_repos, form: nil }
+  end
+
   def create
     @project = current_user.projects.build(project_params)
     authorize @project
