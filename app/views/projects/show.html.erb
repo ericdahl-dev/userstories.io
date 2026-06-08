@@ -1,24 +1,38 @@
 <% content_for :title, @project.name %>
 
-<div class="max-w-4xl mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold text-gray-900 mb-2"><%= @project.name %></h1>
-  <p class="text-sm text-gray-500 mb-6"><%= @project.github_repo %></p>
+<%= render "shared/developer_nav" %>
 
-  <div class="bg-white border rounded-lg shadow-sm p-6 mb-6">
-    <h2 class="text-sm font-semibold text-gray-700 mb-2">Shareable link</h2>
-    <div class="flex items-center gap-3">
-      <code class="text-sm bg-gray-100 px-3 py-1 rounded flex-1 truncate"><%= portal_url(share_token: @project.share_token) %></code>
-      <%= button_to "Rotate link", rotate_token_project_path(@project), method: :post,
-            data: { confirm: "This will invalidate the current link immediately. Continue?" },
-            class: "text-sm text-red-600 hover:underline" %>
+<main class="max-w-4xl mx-auto px-6 py-10">
+  <div class="mb-8">
+    <%= link_to "← Projects", projects_path, class: "text-xs text-gray-400 hover:text-gray-700 transition-colors" %>
+    <h1 class="text-xl font-semibold text-gray-900 mt-4"><%= @project.name %></h1>
+    <p class="text-sm font-mono text-gray-400 mt-0.5"><%= @project.github_repo %></p>
+  </div>
+
+  <div class="space-y-4">
+    <div class="bg-white border border-gray-200 rounded-xl p-5">
+      <p class="text-xs font-medium text-gray-500 mb-3">Shareable portal link</p>
+      <div class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+        <code class="text-xs text-gray-700 flex-1 truncate"><%= portal_url(share_token: @project.share_token) %></code>
+        <%= button_to "Rotate",
+              rotate_token_project_path(@project), method: :post,
+              data: { confirm: "This will invalidate the current link immediately. Continue?" },
+              class: "shrink-0 text-xs text-red-500 hover:text-red-700 font-medium transition-colors" %>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">Rotating this link immediately revokes access for anyone using the old URL.</p>
+    </div>
+
+    <div class="flex items-center gap-3 pt-2">
+      <%= link_to "View submissions", project_submissions_path(@project),
+            class: "text-sm text-indigo-600 font-medium hover:underline" %>
+      <span class="text-gray-300">|</span>
+      <%= link_to "Edit project", edit_project_path(@project),
+            class: "text-sm text-gray-500 hover:text-gray-900 transition-colors" %>
+      <span class="text-gray-300">|</span>
+      <%= button_to "Delete",
+            project_path(@project), method: :delete,
+            data: { confirm: "Delete this project and all its submissions? This cannot be undone." },
+            class: "text-sm text-red-500 hover:text-red-700 transition-colors" %>
     </div>
   </div>
-
-  <div class="flex gap-3">
-    <%= link_to "Edit", edit_project_path(@project), class: "text-sm text-gray-600 hover:underline" %>
-    <%= link_to "View submissions", project_submissions_path(@project), class: "text-sm text-indigo-600 hover:underline" %>
-    <%= button_to "Delete", project_path(@project), method: :delete,
-          data: { confirm: "Delete this project and all its submissions?" },
-          class: "text-sm text-red-600 hover:underline" %>
-  </div>
-</div>
+</main>

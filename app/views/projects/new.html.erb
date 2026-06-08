@@ -1,12 +1,18 @@
-<% content_for :title, "New Project" %>
+<% content_for :title, "New project" %>
 
-<div class="max-w-lg mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold text-gray-900 mb-6">New Project</h1>
+<%= render "shared/developer_nav" %>
 
-  <%= form_with model: @project, class: "space-y-4" do |f| %>
+<main class="max-w-lg mx-auto px-6 py-10">
+  <div class="mb-8">
+    <%= link_to "← Projects", projects_path, class: "text-xs text-gray-400 hover:text-gray-700 transition-colors" %>
+    <h1 class="text-xl font-semibold text-gray-900 mt-4">New project</h1>
+    <p class="text-sm text-gray-400 mt-0.5">Link a GitHub repository to start collecting user stories.</p>
+  </div>
+
+  <%= form_with model: @project, class: "space-y-5" do |f| %>
     <% if @project.errors.any? %>
-      <div class="bg-red-50 border border-red-200 rounded p-3">
-        <ul class="text-sm text-red-700 list-disc pl-4">
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <ul class="text-sm text-red-700 space-y-1">
           <% @project.errors.full_messages.each do |msg| %>
             <li><%= msg %></li>
           <% end %>
@@ -15,15 +21,21 @@
     <% end %>
 
     <div>
-      <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.text_field :name, class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      <%= f.label :name, "Project name", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+      <%= f.text_field :name,
+            placeholder: "My App",
+            class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
     </div>
 
     <div>
-      <%= f.label :github_repo, "GitHub repository", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.text_field :github_repo, placeholder: "owner/repo", class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+      <%= f.label :github_repo, "GitHub repository", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
+      <%= f.text_field :github_repo,
+            placeholder: "owner/repo",
+            class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      <p class="text-xs text-gray-400 mt-1.5">Issues will be created in this repository when you accept submissions.</p>
     </div>
 
-    <%= f.submit "Create project", class: "bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium" %>
+    <%= f.submit "Create project",
+          class: "w-full bg-indigo-600 text-white py-2.5 px-4 rounded-lg text-sm font-medium hover:bg-indigo-700 active:scale-[0.98] transition-all cursor-pointer" %>
   <% end %>
-</div>
+</main>

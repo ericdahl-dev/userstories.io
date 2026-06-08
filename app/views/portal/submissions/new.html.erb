@@ -1,40 +1,56 @@
-<% content_for :title, "New submission — #{@project.name}" %>
+<% content_for :title, "Submit a story - #{@project.name}" %>
 
-<div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
-  <div class="max-w-lg w-full">
-    <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-900"><%= @project.name %></h1>
-      <p class="text-gray-500 mt-2">Share your idea with the developer.</p>
+<div class="min-h-[100dvh] bg-gray-50 flex flex-col">
+  <header class="px-6 py-4 border-b border-gray-200 bg-white">
+    <div class="max-w-lg mx-auto flex items-center justify-between">
+      <div>
+        <p class="text-sm font-semibold text-gray-900"><%= @project.name %></p>
+        <p class="text-xs text-gray-400 mt-0.5">via userstories.io</p>
+      </div>
+      <%= link_to "My submissions", portal_submissions_path(share_token: @project.share_token),
+            class: "text-xs text-gray-500 hover:text-gray-900 transition-colors" %>
     </div>
+  </header>
 
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Submit a user story</h2>
+  <main class="flex-1 flex items-start justify-center px-6 py-10">
+    <div class="w-full max-w-lg">
+      <div class="mb-6">
+        <h1 class="text-xl font-semibold text-gray-900">Submit a user story</h1>
+        <p class="text-sm text-gray-400 mt-1">Describe what you'd like to see. Be as specific as you can.</p>
+      </div>
 
-      <%= form_with model: @submission, url: portal_submissions_path(share_token: @project.share_token), class: "space-y-4" do |f| %>
-        <% if @submission.errors.any? %>
-          <div class="bg-red-50 border border-red-200 rounded p-3">
-            <ul class="text-sm text-red-700 list-disc pl-4">
-              <% @submission.errors.full_messages.each do |msg| %>
-                <li><%= msg %></li>
-              <% end %>
-            </ul>
+      <div class="bg-white border border-gray-200 rounded-xl p-6">
+        <%= form_with model: @submission, url: portal_submissions_path(share_token: @project.share_token), class: "space-y-5" do |f| %>
+          <% if @submission.errors.any? %>
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <ul class="text-sm text-red-700 space-y-1">
+                <% @submission.errors.full_messages.each do |msg| %>
+                  <li><%= msg %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div>
+            <%= f.label :title, "Title", class: "block text-xs font-medium text-gray-600 mb-1.5" %>
+            <%= f.text_field :title,
+                  placeholder: "As a user, I want to...",
+                  autofocus: true,
+                  class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
           </div>
+
+          <div>
+            <%= f.label :body, "Details", class: "block text-xs font-medium text-gray-600 mb-1.5" %>
+            <%= f.text_area :body,
+                  rows: 6,
+                  placeholder: "Describe the context, the problem you're facing, and why this would help...",
+                  class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none" %>
+          </div>
+
+          <%= f.submit "Submit story",
+                class: "w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 active:scale-[0.98] transition-all cursor-pointer" %>
         <% end %>
-
-        <div>
-          <%= f.label :title, "Title", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_field :title, placeholder: "As a user, I want…",
-                class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-        </div>
-
-        <div>
-          <%= f.label :body, "Details", class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.text_area :body, rows: 5, placeholder: "Describe what you'd like to happen and why…",
-                class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
-        </div>
-
-        <%= f.submit "Submit story", class: "w-full bg-indigo-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-indigo-700" %>
-      <% end %>
+      </div>
     </div>
-  </div>
+  </main>
 </div>
