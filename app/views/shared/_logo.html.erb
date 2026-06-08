@@ -1,0 +1,5 @@
+<%# locals: (href: root_path, text_class: "text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-tight", icon_class: "w-6 h-6") %>
+<a href="<%= href %>" class="inline-flex items-center gap-2">
+  <%= image_tag "/icon.svg", alt: "", class: "#{icon_class} shrink-0", width: 24, height: 24, aria: { hidden: true } %>
+  <span class="<%= text_class %>">userstories.io</span>
+</a>

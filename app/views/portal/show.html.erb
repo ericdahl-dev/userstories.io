@@ -5,7 +5,12 @@
     <div class="max-w-lg mx-auto flex items-center justify-between">
       <div>
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100"><%= @project.name %></p>
-        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">via userstories.io</p>
+        <div class="mt-0.5">
+          <%= render "shared/logo",
+                href: root_path,
+                text_class: "text-xs text-gray-400 dark:text-gray-500",
+                icon_class: "w-3.5 h-3.5" %>
+        </div>
       </div>
       <%= render "shared/theme_toggle" %>
     </div>

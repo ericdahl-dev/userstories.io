@@ -19,6 +19,8 @@ class ProjectsController < ApplicationController
   end
 
   def github_repos
+    return redirect_to new_project_path unless turbo_frame_request?
+
     @project = Project.new
     authorize @project, :create?
     @github_repos = fetch_github_repos
