@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   get "up" => "rails/health#show", as: :rails_health_check
+  get "manifest.json", to: "pwa#manifest", as: :pwa_manifest
 
   mount GoodJob::Engine => "/jobs"
 end

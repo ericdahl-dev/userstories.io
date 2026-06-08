@@ -5,7 +5,7 @@
   <%# Nav %>
   <header class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <a href="/" class="text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-tight">userstories.io</a>
+      <%= render "shared/logo" %>
       <div class="flex items-center gap-3">
         <%= render "shared/theme_toggle" %>
         <% if user_signed_in? %>
@@ -95,7 +95,7 @@
 
   <footer class="bg-gray-950 border-t border-gray-800 px-6 py-6">
     <div class="max-w-6xl mx-auto flex items-center justify-between text-xs text-gray-600">
-      <span>userstories.io</span>
+      <%= render "shared/logo", text_class: "text-xs text-gray-500", icon_class: "w-5 h-5" %>
       <span>&copy; <%= Date.today.year %></span>
     </div>
   </footer>
