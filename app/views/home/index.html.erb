@@ -1,16 +1,60 @@
-<div class="min-h-screen flex flex-col items-center justify-center bg-white px-6">
-  <div class="max-w-2xl text-center">
-    <h1 class="text-5xl font-bold tracking-tight text-gray-900 mb-6">
-      User stories from your stakeholders,<br>
+<% content_for :title, "userstories.io — User stories from your stakeholders, straight into GitHub" %>
+
+<div class="min-h-screen bg-white">
+  <%# Nav %>
+  <header class="border-b border-gray-100 px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <span class="font-bold text-gray-900 text-lg">userstories.io</span>
+      <%= button_to "Sign in with GitHub",
+            user_github_omniauth_authorize_path,
+            class: "inline-flex items-center px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors",
+            data: { turbo: false } %>
+    </div>
+  </header>
+
+  <%# Hero %>
+  <section class="max-w-4xl mx-auto px-6 py-20 text-center">
+    <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-6 leading-tight">
+      User stories from your stakeholders,<br class="hidden sm:block">
       straight into GitHub.
     </h1>
-    <p class="text-xl text-gray-500 mb-10">
+    <p class="text-lg sm:text-xl text-gray-500 mb-10 max-w-2xl mx-auto">
       Share a link. Let collaborators submit stories in plain language.
       You review and accept — a GitHub issue is created automatically.
     </p>
     <%= button_to "Get started with GitHub",
           user_github_omniauth_authorize_path,
-          class: "inline-flex items-center px-8 py-4 bg-gray-900 text-white text-lg font-medium rounded-lg hover:bg-gray-700 transition-colors",
+          class: "inline-flex items-center px-8 py-4 bg-indigo-600 text-white text-base font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm",
           data: { turbo: false } %>
-  </div>
+    <p class="text-sm text-gray-400 mt-4">Free to use &middot; No credit card required</p>
+  </section>
+
+  <%# How it works %>
+  <section class="bg-gray-50 border-t border-b border-gray-100 py-16 px-6">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold text-gray-900 text-center mb-12">How it works</h2>
+      <ol class="grid sm:grid-cols-3 gap-8 text-center">
+        <li>
+          <div class="text-3xl font-black text-indigo-600 mb-3">1</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Connect your repo</h3>
+          <p class="text-sm text-gray-500">Sign in with GitHub, create a project, and link it to any repository you own.</p>
+        </li>
+        <li>
+          <div class="text-3xl font-black text-indigo-600 mb-3">2</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Share a link</h3>
+          <p class="text-sm text-gray-500">Send your unique portal link to stakeholders. No GitHub account needed on their end.</p>
+        </li>
+        <li>
+          <div class="text-3xl font-black text-indigo-600 mb-3">3</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Triage in your inbox</h3>
+          <p class="text-sm text-gray-500">Review submissions, accept the ones you want — a GitHub issue is created automatically.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <%# Footer %>
+  <footer class="px-6 py-8 text-center text-sm text-gray-400">
+    &copy; <%= Date.today.year %> userstories.io
+  </footer>
 </div>
