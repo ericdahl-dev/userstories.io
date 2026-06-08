@@ -17,8 +17,6 @@ services:
   web:
     build: .
     command: ["./bin/thrust", "./bin/rails", "server"]
-    expose:
-      - "80"
     depends_on:
       postgres:
         condition: service_healthy
@@ -38,6 +36,7 @@ services:
     restart: unless-stopped
 
   worker:
+    image: ${WORKER_IMAGE:-userstories_web}
     build: .
     command: ["bundle", "exec", "good_job", "start"]
     depends_on:
