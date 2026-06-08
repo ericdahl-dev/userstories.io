@@ -3,6 +3,8 @@ class SubmissionsController < ApplicationController
   before_action :set_project
   before_action :set_submission, only: %i[show accept dismiss]
 
+  skip_after_action :verify_authorized, only: :index
+
   def index
     @submissions = policy_scope(Submission).where(project: @project).recent
   end
