@@ -76,4 +76,75 @@ RSpec.describe "Submissions (developer triage)", type: :request do
       end
     end
   end
+
+  describe "POST /projects/:project_id/submissions/:id/accept" do
+    let(:submission) { create(:submission, project: project, collaborator: collaborator, status: "pending") }
+    let(:fake_issue) { double(number: 99, html_url: "https://github.com/owner/repo/issues/99") }
+    let(:fake_client) { instance_double(Octokit::Client, create_issue: fake_issue) }
+
+    before do
+      allow(Octokit::Client).to receive(:new).and_return(fake_client)
+    end
+
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        post accept_project_submission_path(project, submission)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated as project owner" do
+      before { sign_in user }
+
+      it "transitions submission to accepted" do
+        post accept_project_submission_path(project, submission)
+        expect(submission.reload.status).to eq("accepted")
+      end
+
+      it "stores github_issue_number and github_issue_url" do
+        post accept_project_submission_path(project, submission)
+        expect(submission.reload.github_issue_number).to eq(99)
+        expect(submission.reload.github_issue_url).to eq("https://github.com/owner/repo/issues/99")
+      end
+
+      it "redirects to submission with notice" do
+        post accept_project_submission_path(project, submission)
+        expect(response).to redirect_to(project_submission_path(project, submission))
+      end
+
+      it "shows error flash and keeps submission pending on GitHub failure" do
+        allow(fake_client).to receive(:create_issue).and_raise(Octokit::Error)
+        post accept_project_submission_path(project, submission)
+        expect(submission.reload.status).to eq("pending")
+        expect(response).to redirect_to(project_submission_path(project, submission))
+      end
+    end
+  end
+
+  describe "POST /projects/:project_id/submissions/:id/dismiss" do
+    let(:submission) { create(:submission, project: project, collaborator: collaborator, status: "pending") }
+
+    context "when authenticated as project owner" do
+      before { sign_in user }
+
+      it "transitions submission to dismissed" do
+        post dismiss_project_submission_path(project, submission)
+        expect(submission.reload.status).to eq("dismissed")
+      end
+
+      it "redirects to submissions list" do
+        post dismiss_project_submission_path(project, submission)
+        expect(response).to redirect_to(project_submissions_path(project))
+      end
+    end
+
+    context "when authenticated as different user" do
+      before { sign_in other_user }
+
+      it "returns 404" do
+        post dismiss_project_submission_path(project, submission)
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end
