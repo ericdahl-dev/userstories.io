@@ -1,19 +1,23 @@
 <% content_for :title, "Sign in — #{@project.name}" %>
 
-<div class="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center px-4">
   <div class="max-w-md w-full">
-    <div class="text-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-900"><%= @project.name %></h1>
+    <div class="flex items-center justify-end mb-4">
+      <%= render "shared/theme_toggle" %>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border p-6">
-      <h2 class="text-base font-semibold text-gray-900 mb-4">Sign in with your email</h2>
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100"><%= @project.name %></h1>
+    </div>
+
+    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 p-6">
+      <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Sign in with your email</h2>
 
       <%= form_with url: portal_sessions_path(share_token: @project.share_token), method: :post do |f| %>
         <div class="mb-4">
-          <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.label :email, "Email address", class: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1" %>
           <%= f.email_field :email, placeholder: "you@example.com", required: true,
-                class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+                class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
         </div>
         <%= f.submit "Send login link", class: "w-full bg-indigo-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-indigo-700" %>
       <% end %>
