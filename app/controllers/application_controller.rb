@@ -11,13 +11,6 @@ class ApplicationController < ActionController::Base
 
   private
 
-  def current_collaborator
-    return unless session[:collaborator_id]
-
-    @current_collaborator ||= Collaborator.find_by(id: session[:collaborator_id])
-  end
-  helper_method :current_collaborator
-
   def after_sign_in_path_for(_resource)
     dashboard_path
   end

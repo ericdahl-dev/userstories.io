@@ -1,9 +1,4 @@
-class Portal::SessionsController < ApplicationController
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-
-  before_action :find_project
-
+class Portal::SessionsController < PortalController
   def new
   end
 
@@ -30,13 +25,5 @@ class Portal::SessionsController < ApplicationController
     session[:collaborator_id] = token.collaborator_id
 
     redirect_to portal_submissions_path(share_token: @project.share_token)
-  end
-
-  private
-
-  def find_project
-    @project = Project.find_by!(share_token: params[:share_token])
-  rescue ActiveRecord::RecordNotFound
-    render plain: "This link is no longer valid.", status: :not_found
   end
 end
