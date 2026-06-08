@@ -49,6 +49,26 @@ RSpec.describe Submission, type: :model do
       expect(submission.github_issue_number).to eq(42)
       expect(submission.github_issue_url).to eq("https://github.com/owner/repo/issues/42")
     end
+
+    it "raises when submission is not pending" do
+      submission = create(:submission, status: "accepted")
+      expect {
+        submission.accept!(github_issue_number: 1, github_issue_url: "https://example.com")
+      }.to raise_error(Submission::InvalidTransition)
+    end
+  end
+
+  describe "#dismiss!" do
+    it "transitions status to dismissed" do
+      submission = create(:submission, status: "pending")
+      submission.dismiss!
+      expect(submission.reload.status).to eq("dismissed")
+    end
+
+    it "raises when submission is not pending" do
+      submission = create(:submission, status: "accepted")
+      expect { submission.dismiss! }.to raise_error(Submission::InvalidTransition)
+    end
   end
 
   describe "#ship!" do
@@ -56,6 +76,37 @@ RSpec.describe Submission, type: :model do
       submission = create(:submission, status: "accepted")
       submission.ship!
       expect(submission.reload.status).to eq("shipped")
+    end
+
+    it "raises when submission is not accepted" do
+      submission = create(:submission, status: "pending")
+      expect { submission.ship! }.to raise_error(Submission::InvalidTransition)
+    end
+  end
+
+  describe "guard predicates" do
+    it "#acceptable? true when pending" do
+      expect(build(:submission, status: "pending")).to be_acceptable
+    end
+
+    it "#acceptable? false when accepted" do
+      expect(build(:submission, status: "accepted")).not_to be_acceptable
+    end
+
+    it "#dismissable? true when pending" do
+      expect(build(:submission, status: "pending")).to be_dismissable
+    end
+
+    it "#dismissable? false when dismissed" do
+      expect(build(:submission, status: "dismissed")).not_to be_dismissable
+    end
+
+    it "#shippable? true when accepted" do
+      expect(build(:submission, status: "accepted")).to be_shippable
+    end
+
+    it "#shippable? false when pending" do
+      expect(build(:submission, status: "pending")).not_to be_shippable
     end
   end
 end

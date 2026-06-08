@@ -32,7 +32,7 @@ class SubmissionsController < ApplicationController
 
   def dismiss
     authorize @submission
-    @submission.update!(status: "dismissed")
+    @submission.dismiss!
     redirect_to project_submissions_path(@project), notice: "Submission dismissed."
   end
 

@@ -4,6 +4,8 @@ class Submission < ApplicationRecord
 
   STATUSES = %w[pending accepted shipped dismissed].freeze
 
+  class InvalidTransition < StandardError; end
+
   validates :title, presence: true
   validates :body, presence: true
   validates :status, inclusion: { in: STATUSES }
@@ -13,7 +15,13 @@ class Submission < ApplicationRecord
   scope :shipped,        -> { where(status: "shipped") }
   scope :recent,         -> { order(created_at: :desc) }
 
+  def acceptable?  = status == "pending"
+  def dismissable? = status == "pending"
+  def shippable?   = status == "accepted"
+
   def accept!(github_issue_number:, github_issue_url:)
+    raise InvalidTransition, "can only accept pending submissions" unless acceptable?
+
     update!(
       status: "accepted",
       github_issue_number: github_issue_number,
@@ -21,7 +29,15 @@ class Submission < ApplicationRecord
     )
   end
 
+  def dismiss!
+    raise InvalidTransition, "can only dismiss pending submissions" unless dismissable?
+
+    update!(status: "dismissed")
+  end
+
   def ship!
+    raise InvalidTransition, "can only ship accepted submissions" unless shippable?
+
     update!(status: "shipped")
   end
 end
