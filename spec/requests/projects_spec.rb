@@ -62,6 +62,37 @@ RSpec.describe "Projects", type: :request do
     context "when authenticated" do
       before { sign_in user }
 
+      context "when GitHub API succeeds" do
+        let(:fake_client) { instance_double(Octokit::Client) }
+        let(:repos) do
+          [ double(full_name: "owner/repo-a"), double(full_name: "owner/repo-b") ]
+        end
+
+        before do
+          allow(Octokit::Client).to receive(:new).and_return(fake_client)
+          allow(fake_client).to receive(:repos).and_return(repos)
+        end
+
+        it "renders repo select on GET /projects/new" do
+          get new_project_path
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("owner/repo-a")
+          expect(response.body).to include("owner/repo-b")
+        end
+      end
+
+      context "when GitHub API fails" do
+        before do
+          allow(Octokit::Client).to receive(:new).and_raise(Octokit::Error)
+        end
+
+        it "falls back to text input with message" do
+          get new_project_path
+          expect(response).to have_http_status(:ok)
+          expect(response.body).to include("owner/repo")
+        end
+      end
+
       it "creates a project and redirects" do
         expect {
           post projects_path, params: { project: { name: "My App", github_repo: "owner/repo" } }

@@ -29,9 +29,17 @@
 
     <div>
       <%= f.label :github_repo, "GitHub repository", class: "block text-sm font-medium text-gray-700 mb-1.5" %>
-      <%= f.text_field :github_repo,
-            placeholder: "owner/repo",
-            class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+      <% if @github_repos %>
+        <%= f.select :github_repo,
+              options_for_select(@github_repos, @project.github_repo),
+              { include_blank: "Select a repository..." },
+              class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white" %>
+      <% else %>
+        <%= f.text_field :github_repo,
+              placeholder: "owner/repo",
+              class: "w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+        <p class="text-xs text-amber-600 mt-1.5">Could not load your repositories. Enter the repo identifier manually (e.g. owner/repo).</p>
+      <% end %>
       <p class="text-xs text-gray-400 mt-1.5">Issues will be created in this repository when you accept submissions.</p>
     </div>
 
