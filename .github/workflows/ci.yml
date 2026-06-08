@@ -74,3 +74,4 @@ jobs:
         run: bin/rails assets:precompile
       - name: Run tests
         run: bundle exec rspec
+
