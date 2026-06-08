@@ -6,10 +6,15 @@
   <header class="px-6 py-4 border-b border-gray-100">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
       <a href="/" class="text-sm font-semibold text-gray-900 tracking-tight">userstories.io</a>
-      <%= button_to "Sign in with GitHub",
-            user_github_omniauth_authorize_path,
-            class: "inline-flex items-center gap-2 px-3.5 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors",
-            data: { turbo: false } %>
+      <% if user_signed_in? %>
+        <%= link_to "Go to dashboard", dashboard_path,
+              class: "inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors" %>
+      <% else %>
+        <%= button_to "Sign in with GitHub",
+              user_github_omniauth_authorize_path,
+              class: "inline-flex items-center gap-2 px-3.5 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors",
+              data: { turbo: false } %>
+      <% end %>
     </div>
   </header>
 
