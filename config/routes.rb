@@ -1,0 +1,36 @@
+Rails.application.routes.draw do
+  # Developer auth (Devise + GitHub OmniAuth)
+  devise_for :users, controllers: { omniauth_callbacks: "users/omniauth_callbacks" }
+
+  # Collaborator portal — unauthenticated entry point
+  scope "/p/:share_token" do
+    get  "/",        to: "portal#show",         as: :portal
+    post "/sessions", to: "portal/sessions#create", as: :portal_sessions
+    get  "/sessions/new", to: "portal/sessions#new", as: :new_portal_session
+    get  "/sessions/verify", to: "portal/sessions#verify", as: :verify_portal_session
+    get  "/submissions", to: "portal/submissions#index", as: :portal_submissions
+    post "/submissions", to: "portal/submissions#create"
+    get  "/submissions/new", to: "portal/submissions#new", as: :new_portal_submission
+  end
+
+  # Developer dashboard
+  resources :projects do
+    resources :submissions, only: %i[index show] do
+      member do
+        post :accept
+        post :dismiss
+      end
+    end
+    member do
+      post :rotate_token
+    end
+  end
+
+  get "/dashboard", to: "dashboard#index", as: :dashboard
+
+  root to: "home#index"
+
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  mount GoodJob::Engine => "/jobs"
+end

@@ -1,0 +1,4 @@
+<p>Hi <%= @collaborator.name %>,</p>
+<p>Click the link below to log in to userstories.io and submit your story for <strong><%= @project.name %></strong>.</p>
+<p><%= link_to "Log in to userstories.io", @login_url %></p>
+<p>This link expires in 15 minutes and can only be used once.</p>

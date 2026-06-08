@@ -1,0 +1,16 @@
+<div class="min-h-screen flex flex-col items-center justify-center bg-white px-6">
+  <div class="max-w-2xl text-center">
+    <h1 class="text-5xl font-bold tracking-tight text-gray-900 mb-6">
+      User stories from your stakeholders,<br>
+      straight into GitHub.
+    </h1>
+    <p class="text-xl text-gray-500 mb-10">
+      Share a link. Let collaborators submit stories in plain language.
+      You review and accept — a GitHub issue is created automatically.
+    </p>
+    <%= link_to "Get started with GitHub",
+          user_github_omniauth_authorize_path,
+          class: "inline-flex items-center px-8 py-4 bg-gray-900 text-white text-lg font-medium rounded-lg hover:bg-gray-700 transition-colors",
+          data: { turbo: false } %>
+  </div>
+</div>
