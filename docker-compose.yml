@@ -1,12 +1,30 @@
 services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-userstories}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-userstories_production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-userstories}", "-d", "${POSTGRES_DB:-userstories_production}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   web:
     build: .
     command: ["./bin/thrust", "./bin/rails", "server"]
     expose:
       - "80"
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgres://${POSTGRES_USER:-userstories}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-userstories_production}
       APP_HOST: ${APP_HOST}
       RAILS_ALLOWED_HOSTS: ${RAILS_ALLOWED_HOSTS:-}
       RAILS_ASSUME_SSL: ${RAILS_ASSUME_SSL:-true}
@@ -22,11 +40,17 @@ services:
   worker:
     build: .
     command: ["bundle", "exec", "good_job", "start"]
+    depends_on:
+      postgres:
+        condition: service_healthy
     environment:
       RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: postgres://${POSTGRES_USER:-userstories}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-userstories_production}
       APP_HOST: ${APP_HOST}
       RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
       RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       JOB_CONCURRENCY: ${JOB_CONCURRENCY:-5}
     restart: unless-stopped
+
+volumes:
+  postgres_data:
