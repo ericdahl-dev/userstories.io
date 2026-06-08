@@ -9,24 +9,24 @@ RSpec.describe GithubIssueCreator do
   subject(:creator) { described_class.new(submission) }
 
   describe "#create!" do
-    let(:fake_issue) { double(number: 42, html_url: "https://github.com/owner/repo/issues/42") }
-    let(:fake_client) { instance_double(Octokit::Client, create_issue: fake_issue) }
+    let(:fake_client) { instance_double(GithubClient) }
 
     before do
-      allow(Octokit::Client).to receive(:new).with(access_token: "test_token").and_return(fake_client)
+      allow(GithubClient).to receive(:new).with("test_token").and_return(fake_client)
+      allow(fake_client).to receive(:create_issue).and_return(number: 42, url: "https://github.com/owner/repo/issues/42")
     end
 
     it "creates a GitHub issue in the correct repo" do
       creator.create!
-      expect(fake_client).to have_received(:create_issue).with("owner/repo", "My Story", anything)
+      expect(fake_client).to have_received(:create_issue).with(repo: "owner/repo", title: "My Story", body: anything)
     end
 
     it "includes submission body and backlink in issue body" do
       creator.create!
-      expect(fake_client).to have_received(:create_issue) do |_repo, _title, body|
-        expect(body).to include("I want this.")
-        expect(body).to include("userstories.io")
-        expect(body).to include("Alice")
+      expect(fake_client).to have_received(:create_issue) do |kwargs|
+        expect(kwargs[:body]).to include("I want this.")
+        expect(kwargs[:body]).to include("userstories.io")
+        expect(kwargs[:body]).to include("Alice")
       end
     end
 
@@ -35,8 +35,8 @@ RSpec.describe GithubIssueCreator do
       expect(result).to eq(number: 42, url: "https://github.com/owner/repo/issues/42")
     end
 
-    it "wraps Octokit::Error in GithubIssueCreator::Error" do
-      allow(fake_client).to receive(:create_issue).and_raise(Octokit::Error)
+    it "wraps GithubClient::Error in GithubIssueCreator::Error" do
+      allow(fake_client).to receive(:create_issue).and_raise(GithubClient::Error)
       expect { creator.create! }.to raise_error(GithubIssueCreator::Error)
     end
   end

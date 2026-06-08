@@ -63,14 +63,11 @@ RSpec.describe "Projects", type: :request do
       before { sign_in user }
 
       context "when GitHub API succeeds" do
-        let(:fake_client) { instance_double(Octokit::Client) }
-        let(:repos) do
-          [ double(full_name: "owner/repo-a"), double(full_name: "owner/repo-b") ]
-        end
+        let(:fake_client) { instance_double(GithubClient) }
 
         before do
-          allow(Octokit::Client).to receive(:new).and_return(fake_client)
-          allow(fake_client).to receive(:repos).and_return(repos)
+          allow(GithubClient).to receive(:new).and_return(fake_client)
+          allow(fake_client).to receive(:repos).and_return(%w[owner/repo-a owner/repo-b])
         end
 
         it "renders repo select on GET /projects/new" do
@@ -83,7 +80,7 @@ RSpec.describe "Projects", type: :request do
 
       context "when GitHub API fails" do
         before do
-          allow(Octokit::Client).to receive(:new).and_raise(Octokit::Error)
+          allow(GithubClient).to receive(:new).and_raise(GithubClient::Error)
         end
 
         it "falls back to text input with message" do

@@ -8,18 +8,21 @@ class GithubIssueCreator
   end
 
   def create!
-    client = Octokit::Client.new(access_token: @developer.github_token)
-    issue  = client.create_issue(
-      @project.github_repo,
-      @submission.title,
-      issue_body
+    result = github_client.create_issue(
+      repo:  @project.github_repo,
+      title: @submission.title,
+      body:  issue_body
     )
-    { number: issue.number, url: issue.html_url }
-  rescue Octokit::Error => e
+    result
+  rescue GithubClient::Error => e
     raise Error, e.message
   end
 
   private
+
+  def github_client
+    GithubClient.new(@developer.github_token)
+  end
 
   def issue_body
     <<~BODY
