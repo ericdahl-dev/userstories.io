@@ -15,6 +15,7 @@ class ProjectsController < ApplicationController
   def new
     @project = Project.new
     authorize @project
+    @github_repos = fetch_github_repos
   end
 
   def create
@@ -24,6 +25,7 @@ class ProjectsController < ApplicationController
     if @project.save
       redirect_to @project, notice: "Project created."
     else
+      @github_repos = fetch_github_repos
       render :new, status: :unprocessable_entity
     end
   end
@@ -62,5 +64,12 @@ class ProjectsController < ApplicationController
 
   def project_params
     params.require(:project).permit(:name, :github_repo)
+  end
+
+  def fetch_github_repos
+    client = Octokit::Client.new(access_token: current_user.github_token)
+    client.repos(nil, sort: "pushed", per_page: 100).map(&:full_name).sort
+  rescue Octokit::Error
+    nil
   end
 end
