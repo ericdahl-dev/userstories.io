@@ -147,4 +147,29 @@ RSpec.describe "Submissions (developer triage)", type: :request do
       end
     end
   end
+
+  describe "POST /projects/:project_id/submissions/:id/ship" do
+    let(:submission) { create(:submission, project: project, collaborator: collaborator, status: "accepted") }
+
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        post ship_project_submission_path(project, submission)
+        expect(response).to redirect_to(new_user_session_path)
+      end
+    end
+
+    context "when authenticated as project owner" do
+      before { sign_in user }
+
+      it "transitions to shipped" do
+        post ship_project_submission_path(project, submission)
+        expect(submission.reload.status).to eq("shipped")
+      end
+
+      it "redirects to submission" do
+        post ship_project_submission_path(project, submission)
+        expect(response).to redirect_to(project_submission_path(project, submission))
+      end
+    end
+  end
 end

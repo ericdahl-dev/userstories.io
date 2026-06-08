@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       member do
         post :accept
         post :dismiss
+        post :ship
       end
     end
     member do

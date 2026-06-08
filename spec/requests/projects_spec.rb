@@ -98,6 +98,13 @@ RSpec.describe "Projects", type: :request do
         expect(project.reload.share_token).not_to eq(old_token)
       end
 
+      it "old portal URL returns not_found after rotation" do
+        old_token = project.share_token
+        post rotate_token_project_path(project)
+        get portal_path(share_token: old_token)
+        expect(response).to have_http_status(:not_found)
+      end
+
       it "redirects to project" do
         post rotate_token_project_path(project)
         expect(response).to redirect_to(project_path(project))
