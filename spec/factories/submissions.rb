@@ -1,11 +1,9 @@
 FactoryBot.define do
   factory :submission do
-    collaborator { nil }
-    project { nil }
-    title { "MyString" }
-    body { "MyText" }
-    status { "MyString" }
-    github_issue_number { 1 }
-    github_issue_url { "MyString" }
+    association :collaborator
+    association :project
+    sequence(:title) { |n| "User story #{n}" }
+    body { "As a user, I want something, so that I benefit." }
+    status { "pending" }
   end
 end

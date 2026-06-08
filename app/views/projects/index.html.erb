@@ -1,0 +1,21 @@
+<% content_for :title, "Projects" %>
+
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Your Projects</h1>
+    <%= link_to "New Project", new_project_path, class: "bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700" %>
+  </div>
+
+  <% if @projects.any? %>
+    <ul class="divide-y divide-gray-200 border rounded-lg bg-white shadow-sm">
+      <% @projects.each do |project| %>
+        <li class="px-4 py-4 flex items-center justify-between">
+          <%= link_to project.name, project_path(project), class: "font-medium text-indigo-600 hover:underline" %>
+          <span class="text-sm text-gray-500"><%= project.github_repo %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="text-gray-500">No projects yet. <%= link_to "Create one", new_project_path, class: "text-indigo-600 hover:underline" %>.</p>
+  <% end %>
+</div>

@@ -105,3 +105,17 @@ _(add environment-specific gotchas here as they are discovered)_
 
 - macOS: `PGGSSENCMODE=disable` initializer present at
   `config/initializers/0_pg_gssenc_fork_safety.rb` — do not remove
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`gh issue create` / `gh issue view`). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context repo: `CONTEXT.md` at root + `docs/adr/`. See `docs/agents/domain.md`.
