@@ -67,9 +67,8 @@ class ProjectsController < ApplicationController
   end
 
   def fetch_github_repos
-    client = Octokit::Client.new(access_token: current_user.github_token)
-    client.repos(nil, sort: "pushed", per_page: 100).map(&:full_name).sort
-  rescue Octokit::Error
+    GithubClient.new(current_user.github_token).repos
+  rescue GithubClient::Error
     nil
   end
 end
