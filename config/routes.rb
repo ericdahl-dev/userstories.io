@@ -15,6 +15,9 @@ Rails.application.routes.draw do
 
   # Developer dashboard
   resources :projects do
+    collection do
+      get :github_repos
+    end
     resources :submissions, only: %i[index show] do
       member do
         post :accept

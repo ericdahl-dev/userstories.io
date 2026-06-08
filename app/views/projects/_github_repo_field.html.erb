@@ -1,0 +1,43 @@
+<%= turbo_frame_tag "github_repos" do %>
+  <div class="flex items-center justify-between gap-3 mb-1.5">
+    <% if form %>
+      <%= form.label :github_repo, "GitHub repository", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+    <% else %>
+      <%= label_tag "project_github_repo", "GitHub repository", class: "block text-sm font-medium text-gray-700 dark:text-gray-300" %>
+    <% end %>
+    <%= link_to "Refresh list",
+          github_repos_projects_path,
+          class: "shrink-0 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline",
+          data: { turbo_frame: "github_repos" } %>
+  </div>
+
+  <% if github_repos %>
+    <% if form %>
+      <%= form.select :github_repo,
+            options_for_select(github_repos, project.github_repo),
+            { include_blank: "Select a repository..." },
+            class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    <% else %>
+      <%= select_tag "project[github_repo]",
+            options_for_select(github_repos, project.github_repo),
+            include_blank: "Select a repository...",
+            id: "project_github_repo",
+            class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    <% end %>
+  <% else %>
+    <% if form %>
+      <%= form.text_field :github_repo,
+            placeholder: "owner/repo",
+            class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    <% else %>
+      <%= text_field_tag "project[github_repo]",
+            project.github_repo,
+            placeholder: "owner/repo",
+            id: "project_github_repo",
+            class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    <% end %>
+    <p class="text-xs text-amber-600 dark:text-amber-400 mt-1.5">Could not load your repositories. Enter the repo identifier manually (e.g. owner/repo), or try refreshing the list.</p>
+  <% end %>
+
+  <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Issues will be created in this repository when you accept submissions.</p>
+<% end %>
