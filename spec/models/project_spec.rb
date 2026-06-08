@@ -38,4 +38,31 @@ RSpec.describe Project, type: :model do
       expect(project.reload.share_token).to eq(original_token)
     end
   end
+
+  describe "#rotate_share_token!" do
+    it "changes the share_token" do
+      project = create(:project)
+      original = project.share_token
+      project.rotate_share_token!
+      expect(project.reload.share_token).not_to eq(original)
+    end
+
+    it "persists the new token" do
+      project = create(:project)
+      project.rotate_share_token!
+      expect(project.share_token).to eq(project.reload.share_token)
+    end
+  end
+
+  describe ".generate_share_token" do
+    it "returns a url-safe base64 string of correct length" do
+      token = Project.generate_share_token
+      expect(token).to match(/\A[A-Za-z0-9\-_]+\z/)
+      expect(token.length).to be >= 24
+    end
+
+    it "generates unique values" do
+      expect(Project.generate_share_token).not_to eq(Project.generate_share_token)
+    end
+  end
 end

@@ -6,11 +6,19 @@ class Project < ApplicationRecord
   validates :github_repo, presence: true
   validates :share_token, presence: true, uniqueness: true
 
-  before_validation :generate_share_token, on: :create
+  before_validation :set_share_token, on: :create
+
+  def rotate_share_token!
+    update!(share_token: self.class.generate_share_token)
+  end
+
+  def self.generate_share_token
+    SecureRandom.urlsafe_base64(24)
+  end
 
   private
 
-  def generate_share_token
-    self.share_token ||= SecureRandom.urlsafe_base64(24)
+  def set_share_token
+    self.share_token ||= self.class.generate_share_token
   end
 end
