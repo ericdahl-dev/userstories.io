@@ -3,6 +3,7 @@ class SubmissionPolicy < ApplicationPolicy
   def show?    = developer_owns_project?
   def accept?  = developer_owns_project? && record.status == "pending"
   def dismiss? = developer_owns_project? && record.status == "pending"
+  def ship?    = developer_owns_project? && record.status == "accepted"
 
   class Scope < ApplicationPolicy::Scope
     def resolve

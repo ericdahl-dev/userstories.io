@@ -1,7 +1,7 @@
 class SubmissionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_project
-  before_action :set_submission, only: %i[show accept dismiss]
+  before_action :set_submission, only: %i[show accept dismiss ship]
 
   skip_after_action :verify_authorized, only: :index
 
@@ -34,6 +34,12 @@ class SubmissionsController < ApplicationController
     authorize @submission
     @submission.update!(status: "dismissed")
     redirect_to project_submissions_path(@project), notice: "Submission dismissed."
+  end
+
+  def ship
+    authorize @submission
+    @submission.ship!
+    redirect_to project_submission_path(@project, @submission), notice: "Marked as shipped."
   end
 
   private
