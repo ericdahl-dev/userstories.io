@@ -1,8 +1,4 @@
-class Portal::SubmissionsController < ApplicationController
-  skip_after_action :verify_authorized
-  skip_after_action :verify_policy_scoped
-
-  before_action :find_project
+class Portal::SubmissionsController < PortalController
   before_action :require_collaborator
 
   def index
@@ -27,12 +23,6 @@ class Portal::SubmissionsController < ApplicationController
   end
 
   private
-
-  def find_project
-    @project = Project.find_by!(share_token: params[:share_token])
-  rescue ActiveRecord::RecordNotFound
-    render plain: "This link is no longer valid.", status: :not_found
-  end
 
   def require_collaborator
     unless current_collaborator
