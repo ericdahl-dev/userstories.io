@@ -18,6 +18,10 @@ class ApplicationController < ActionController::Base
   end
   helper_method :current_collaborator
 
+  def after_sign_in_path_for(_resource)
+    dashboard_path
+  end
+
   def handle_not_authorized
     redirect_back_or_to root_path, alert: "You are not authorized to perform this action."
   end
