@@ -1,8 +1,7 @@
 FactoryBot.define do
   factory :project do
-    user { nil }
-    name { "MyString" }
-    github_repo { "MyString" }
-    share_token { "MyString" }
+    association :user
+    sequence(:name) { |n| "Project #{n}" }
+    sequence(:github_repo) { |n| "owner/repo-#{n}" }
   end
 end

@@ -2,6 +2,8 @@ class ProjectsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_project, only: %i[show edit update destroy rotate_token]
 
+  skip_after_action :verify_authorized, only: :index
+
   def index
     @projects = policy_scope(Project)
   end
@@ -55,7 +57,7 @@ class ProjectsController < ApplicationController
   private
 
   def set_project
-    @project = current_user.projects.find(params[:id])
+    @project = Project.find(params[:id])
   end
 
   def project_params

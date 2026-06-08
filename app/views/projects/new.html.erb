@@ -1,0 +1,29 @@
+<% content_for :title, "New Project" %>
+
+<div class="max-w-lg mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">New Project</h1>
+
+  <%= form_with model: @project, class: "space-y-4" do |f| %>
+    <% if @project.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded p-3">
+        <ul class="text-sm text-red-700 list-disc pl-4">
+          <% @project.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :name, class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+
+    <div>
+      <%= f.label :github_repo, "GitHub repository", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.text_field :github_repo, placeholder: "owner/repo", class: "w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+
+    <%= f.submit "Create project", class: "bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium" %>
+  <% end %>
+</div>
