@@ -52,7 +52,7 @@ class ProjectsController < ApplicationController
 
   def rotate_token
     authorize @project
-    @project.update!(share_token: SecureRandom.urlsafe_base64(24))
+    @project.rotate_share_token!
     redirect_to @project, notice: "Shareable link has been rotated."
   end
 
