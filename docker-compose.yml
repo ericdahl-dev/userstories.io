@@ -17,8 +17,6 @@ services:
   web:
     build: .
     command: ["./bin/thrust", "./bin/rails", "server"]
-    expose:
-      - "80"
     depends_on:
       postgres:
         condition: service_healthy
