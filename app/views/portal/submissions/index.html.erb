@@ -1,52 +1,55 @@
 <% content_for :title, "Your submissions - #{@project.name}" %>
 
-<div class="min-h-[100dvh] bg-gray-50 flex flex-col">
-  <header class="px-6 py-4 border-b border-gray-200 bg-white">
+<div class="min-h-[100dvh] bg-gray-50 dark:bg-gray-950 flex flex-col">
+  <header class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
     <div class="max-w-2xl mx-auto flex items-center justify-between">
       <div>
-        <p class="text-sm font-semibold text-gray-900"><%= @project.name %></p>
-        <p class="text-xs text-gray-400 mt-0.5">via userstories.io</p>
+        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100"><%= @project.name %></p>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">via userstories.io</p>
       </div>
-      <%= link_to "New submission", new_portal_submission_path(share_token: @project.share_token),
-            class: "inline-flex items-center px-3.5 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors" %>
+      <div class="flex items-center gap-3">
+        <%= render "shared/theme_toggle" %>
+        <%= link_to "New submission", new_portal_submission_path(share_token: @project.share_token),
+              class: "inline-flex items-center px-3.5 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors" %>
+      </div>
     </div>
   </header>
 
   <main class="flex-1 px-6 py-10">
     <div class="max-w-2xl mx-auto">
       <% if notice.present? %>
-        <div class="mb-6 bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-800">
+        <div class="mb-6 bg-green-50 dark:bg-green-950 border border-green-200 dark:border-green-800 rounded-lg px-4 py-3 text-sm text-green-800 dark:text-green-200">
           <%= notice %>
         </div>
       <% end %>
 
       <div class="mb-6">
-        <h1 class="text-xl font-semibold text-gray-900">Your submissions</h1>
-        <p class="text-sm text-gray-400 mt-0.5">Track the stories you've shared with the team.</p>
+        <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Your submissions</h1>
+        <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">Track the stories you've shared with the team.</p>
       </div>
 
       <% if @submissions.any? %>
-        <ul class="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden bg-white">
+        <ul class="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
           <% @submissions.each do |submission| %>
             <li class="flex items-start justify-between gap-4 px-5 py-4">
               <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-900 truncate"><%= submission.title %></p>
-                <p class="text-xs text-gray-400 mt-1"><%= submission.created_at.strftime("%b %-d, %Y") %></p>
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"><%= submission.title %></p>
+                <p class="text-xs text-gray-400 dark:text-gray-500 mt-1"><%= submission.created_at.strftime("%b %-d, %Y") %></p>
               </div>
               <span class="shrink-0 mt-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full border
-                <%= submission.status == 'shipped'  ? 'bg-green-50 text-green-700 border-green-200' :
-                    submission.status == 'accepted' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                    'bg-gray-50 text-gray-500 border-gray-200' %>">
+                <%= submission.status == 'shipped'  ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' :
+                    submission.status == 'accepted' ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' :
+                    'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700' %>">
                 <%= submission.status %>
               </span>
             </li>
           <% end %>
         </ul>
       <% else %>
-        <div class="border border-gray-200 rounded-xl bg-white px-6 py-16 text-center">
-          <p class="text-sm font-medium text-gray-900">No submissions yet</p>
-          <p class="text-sm text-gray-400 mt-1">
-            <%= link_to "Submit your first story", new_portal_submission_path(share_token: @project.share_token), class: "text-indigo-600 hover:underline" %>
+        <div class="border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 px-6 py-16 text-center">
+          <p class="text-sm font-medium text-gray-900 dark:text-gray-100">No submissions yet</p>
+          <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">
+            <%= link_to "Submit your first story", new_portal_submission_path(share_token: @project.share_token), class: "text-indigo-600 dark:text-indigo-400 hover:underline" %>
           </p>
         </div>
       <% end %>

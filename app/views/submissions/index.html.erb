@@ -4,25 +4,25 @@
 
 <main class="max-w-4xl mx-auto px-6 py-10">
   <div class="mb-8">
-    <%= link_to "← #{@project.name}", project_path(@project), class: "text-xs text-gray-400 hover:text-gray-700 transition-colors" %>
-    <h1 class="text-xl font-semibold text-gray-900 mt-4">Submissions</h1>
-    <p class="text-sm text-gray-400 mt-0.5 font-mono"><%= @project.github_repo %></p>
+    <%= link_to "← #{@project.name}", project_path(@project), class: "text-xs text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors" %>
+    <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-4">Submissions</h1>
+    <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5 font-mono"><%= @project.github_repo %></p>
   </div>
 
   <% if @submissions.any? %>
-    <ul class="divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden bg-white">
+    <ul class="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
       <% @submissions.each do |submission| %>
         <li>
-          <%= link_to project_submission_path(@project, submission), class: "flex items-start justify-between gap-4 px-5 py-4 hover:bg-gray-50 transition-colors" do %>
+          <%= link_to project_submission_path(@project, submission), class: "flex items-start justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" do %>
             <div class="min-w-0">
-              <p class="text-sm font-medium text-gray-900 truncate"><%= submission.title %></p>
-              <p class="text-xs text-gray-400 mt-1"><%= submission.collaborator.name %> &middot; <%= submission.created_at.strftime("%b %-d, %Y") %></p>
+              <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"><%= submission.title %></p>
+              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1"><%= submission.collaborator.name %> &middot; <%= submission.created_at.strftime("%b %-d, %Y") %></p>
             </div>
             <span class="shrink-0 mt-0.5 text-[10px] font-medium px-2 py-0.5 rounded-full border
-              <%= submission.status == 'accepted'  ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                  submission.status == 'shipped'   ? 'bg-green-50 text-green-700 border-green-200' :
-                  submission.status == 'dismissed' ? 'bg-gray-50 text-gray-500 border-gray-200' :
-                  'bg-amber-50 text-amber-700 border-amber-200' %>">
+              <%= submission.status == 'accepted'  ? 'bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800' :
+                  submission.status == 'shipped'   ? 'bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800' :
+                  submission.status == 'dismissed' ? 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700' :
+                  'bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800' %>">
               <%= submission.status %>
             </span>
           <% end %>
@@ -30,9 +30,9 @@
       <% end %>
     </ul>
   <% else %>
-    <div class="border border-gray-200 rounded-xl bg-white px-6 py-16 text-center">
-      <p class="text-sm font-medium text-gray-900">No submissions yet</p>
-      <p class="text-sm text-gray-400 mt-1">Share your project link to start receiving user stories.</p>
+    <div class="border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 px-6 py-16 text-center">
+      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">No submissions yet</p>
+      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Share your project link to start receiving user stories.</p>
     </div>
   <% end %>
 </main>

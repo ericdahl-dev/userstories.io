@@ -22,11 +22,20 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+
+    <script>
+      (function() {
+        var stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
   </head>
 
-  <body class="h-full bg-white text-gray-900 antialiased" style="font-family: 'Geist', system-ui, -apple-system, sans-serif;">
+  <body class="h-full bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased" style="font-family: 'Geist', system-ui, -apple-system, sans-serif;">
     <% if notice.present? %>
-      <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg whitespace-nowrap">
+      <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-700 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg whitespace-nowrap">
         <%= notice %>
       </div>
     <% end %>
@@ -37,5 +46,35 @@
     <% end %>
 
     <%= yield %>
+
+    <script>
+      (function() {
+        function updateToggle(btn) {
+          var isDark = document.documentElement.classList.contains("dark");
+          var iconDark = btn.querySelector('[data-theme-icon="dark"]');
+          var iconLight = btn.querySelector('[data-theme-icon="light"]');
+          iconDark.classList.toggle("hidden", !isDark);
+          iconLight.classList.toggle("hidden", isDark);
+          btn.setAttribute("aria-pressed", isDark ? "true" : "false");
+          btn.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+        }
+
+        function initToggles() {
+          document.querySelectorAll("[data-theme-toggle]").forEach(updateToggle);
+        }
+
+        document.addEventListener("click", function(event) {
+          var btn = event.target.closest("[data-theme-toggle]");
+          if (!btn) return;
+
+          var nowDark = document.documentElement.classList.toggle("dark");
+          localStorage.setItem("theme", nowDark ? "dark" : "light");
+          document.querySelectorAll("[data-theme-toggle]").forEach(updateToggle);
+        });
+
+        initToggles();
+        document.addEventListener("turbo:load", initToggles);
+      })();
+    </script>
   </body>
 </html>
