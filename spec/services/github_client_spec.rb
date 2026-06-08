@@ -28,7 +28,7 @@ RSpec.describe GithubClient do
   end
 
   describe "#repos" do
-    let(:fake_repos) { [double(full_name: "o/r1"), double(full_name: "o/r2")] }
+    let(:fake_repos) { [ double(full_name: "o/r1"), double(full_name: "o/r2") ] }
 
     it "returns sorted repo full names" do
       allow(fake_octokit).to receive(:repos).with(nil, sort: "pushed", per_page: 100).and_return(fake_repos)
