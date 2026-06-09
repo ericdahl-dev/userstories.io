@@ -63,6 +63,7 @@ jobs:
     env:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/userstories_test
+      COVERAGE: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1

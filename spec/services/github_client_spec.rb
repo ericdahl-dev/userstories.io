@@ -54,4 +54,62 @@ RSpec.describe GithubClient do
       expect { client.repos }.to raise_error(GithubClient::Error)
     end
   end
+
+  describe "#file_content" do
+    it "returns decoded file content" do
+      entry = double(type: "file", size: 100, content: Base64.encode64("class App\nend"))
+      allow(fake_octokit).to receive(:contents).with("o/r", path: "README.md").and_return(entry)
+
+      expect(client.file_content(repo: "o/r", path: "README.md")).to eq("class App\nend")
+    end
+
+    it "returns nil for directories" do
+      allow(fake_octokit).to receive(:contents).with("o/r", path: "app").and_return([])
+
+      expect(client.file_content(repo: "o/r", path: "app")).to be_nil
+    end
+
+    it "returns nil for oversized files" do
+      entry = double(type: "file", size: 9.kilobytes, content: "ignored")
+      allow(fake_octokit).to receive(:contents).with("o/r", path: "big.rb").and_return(entry)
+
+      expect(client.file_content(repo: "o/r", path: "big.rb")).to be_nil
+    end
+
+    it "returns nil when the path is missing" do
+      allow(fake_octokit).to receive(:contents).and_raise(Octokit::NotFound)
+
+      expect(client.file_content(repo: "o/r", path: "missing.rb")).to be_nil
+    end
+
+    it "raises GithubClient::Error on Octokit::Error" do
+      allow(fake_octokit).to receive(:contents).and_raise(Octokit::Error)
+      expect { client.file_content(repo: "o/r", path: "app.rb") }.to raise_error(GithubClient::Error)
+    end
+  end
+
+  describe "#directory_paths" do
+    it "returns eligible file paths in a directory" do
+      entries = [
+        double(type: "file", path: "app/models/user.rb", size: 100),
+        double(type: "dir", path: "app/views", size: 0),
+        double(type: "file", path: "spec/models/user_spec.rb", size: 100),
+        double(type: "file", path: "app/logo.png", size: 100)
+      ]
+      allow(fake_octokit).to receive(:contents).with("o/r", path: "app").and_return(entries)
+
+      expect(client.directory_paths(repo: "o/r", path: "app")).to eq([ "app/models/user.rb" ])
+    end
+
+    it "returns an empty array when the directory is missing" do
+      allow(fake_octokit).to receive(:contents).and_raise(Octokit::NotFound)
+
+      expect(client.directory_paths(repo: "o/r", path: "missing")).to eq([])
+    end
+
+    it "raises GithubClient::Error on Octokit::Error" do
+      allow(fake_octokit).to receive(:contents).and_raise(Octokit::Error)
+      expect { client.directory_paths(repo: "o/r", path: "app") }.to raise_error(GithubClient::Error)
+    end
+  end
 end
