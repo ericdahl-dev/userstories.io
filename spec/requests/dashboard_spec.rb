@@ -49,6 +49,29 @@ RSpec.describe "Dashboard", type: :request do
 
         expect(response.body).not_to include(accepted.title)
       end
+
+      it "paginates pending submissions at 50 per page" do
+        own_project = create(:project, user: user)
+        collaborator = create(:collaborator)
+        submissions = create_list(:submission, 51, project: own_project, collaborator: collaborator, status: "pending")
+
+        get dashboard_path
+
+        expect(response.body).to include(submissions.last.title)
+        expect(response.body).not_to include(submissions.first.title)
+        expect(response.body).to include("Next")
+      end
+
+      it "shows the next page of pending submissions" do
+        own_project = create(:project, user: user)
+        collaborator = create(:collaborator)
+        submissions = create_list(:submission, 51, project: own_project, collaborator: collaborator, status: "pending")
+
+        get dashboard_path, params: { page: 2 }
+
+        expect(response.body).to include(submissions.first.title)
+        expect(response.body).not_to include(submissions.last.title)
+      end
     end
   end
 end

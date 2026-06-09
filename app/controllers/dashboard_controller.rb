@@ -7,5 +7,6 @@ class DashboardController < ApplicationController
   def index
     @pending_submissions = policy_scope(Submission).pending_review.recent
                                                    .includes(:collaborator, project: :user)
+                                                   .page(params[:page]).per(50)
   end
 end
