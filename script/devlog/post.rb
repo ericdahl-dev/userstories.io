@@ -55,7 +55,7 @@ module Devlog
 
     def format_tags(tags)
       tags = Array(tags).map(&:to_s).reject(&:empty?)
-      tags = ["devlog"] if tags.empty?
+      tags = [ "devlog" ] if tags.empty?
       tags.map { |tag| "  - #{tag}" }.join("\n")
     end
 
@@ -100,7 +100,7 @@ module Devlog
         date: date,
         type: type,
         summary: summary,
-        tags: [tag],
+        tags: [ tag ],
         body: body || "Write the story behind **#{title}**.\n\n## What changed\n\n-\n\n## Why it matters\n\n-\n\n## Next up\n\n-"
       )
     end

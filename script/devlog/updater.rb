@@ -37,17 +37,21 @@ module Devlog
       Time.parse(value)
     end
 
+    def fetch_pulls(pull_request:, since:)
+      if pull_request
+        [ GitHub.merged_pull_request(number: pull_request) ]
+      else
+        GitHub.merged_pull_requests(since: since)
+      end
+    end
+
     def update!(all: false, pull_request: nil, force: false, dry_run: false)
       manifest = load_manifest
       synced = manifest.fetch("synced_pull_requests", [])
       since = all ? nil : last_synced_at(manifest)
       created = []
 
-      pulls = if pull_request
-                [GitHub.merged_pull_request(number: pull_request)]
-              else
-                GitHub.merged_pull_requests(since: since)
-              end
+      pulls = fetch_pulls(pull_request: pull_request, since: since)
 
       pulls.each do |pr|
         next if synced.include?(pr[:number])

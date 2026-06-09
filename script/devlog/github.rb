@@ -13,8 +13,9 @@ module Devlog
     def repository
       return ENV["GITHUB_REPOSITORY"] if ENV["GITHUB_REPOSITORY"]&.include?("/")
 
-      remote = `git -C #{Devlog::Post::ROOT} remote get-url origin 2>/dev/null`.strip
-      raise "Set GITHUB_REPOSITORY or run from a git repo with origin" if remote.empty?
+      stdout, status = Open3.capture2("git", "-C", Devlog::Post::ROOT, "remote", "get-url", "origin")
+      remote = stdout.strip
+      raise "Set GITHUB_REPOSITORY or run from a git repo with origin" unless status.success? && !remote.empty?
 
       remote
         .sub(%r{\A(?:git@github\.com:|https://github\.com/)}, "")
