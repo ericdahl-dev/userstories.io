@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -145,6 +145,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_130000) do
     t.index ["user_id"], name: "index_projects_on_user_id"
   end
 
+  create_table "refinement_messages", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.string "role", null: false
+    t.bigint "submission_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["submission_id", "created_at"], name: "index_refinement_messages_on_submission_id_and_created_at"
+    t.index ["submission_id"], name: "index_refinement_messages_on_submission_id"
+  end
+
   create_table "submissions", force: :cascade do |t|
     t.text "body", null: false
     t.bigint "collaborator_id", null: false
@@ -155,6 +165,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_130000) do
     t.datetime "github_issue_synced_at"
     t.string "github_issue_url"
     t.bigint "project_id", null: false
+    t.datetime "refined_at"
+    t.text "refined_body"
+    t.string "refined_title"
+    t.datetime "refinement_locked_at"
+    t.string "refinement_status", default: "pending", null: false
     t.string "status", default: "pending", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false
@@ -182,6 +197,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_130000) do
 
   add_foreign_key "magic_tokens", "collaborators"
   add_foreign_key "projects", "users"
+  add_foreign_key "refinement_messages", "submissions"
   add_foreign_key "submissions", "collaborators"
   add_foreign_key "submissions", "projects"
 end

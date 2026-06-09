@@ -150,6 +150,7 @@ GEM
     erubi (1.13.1)
     et-orbi (1.4.0)
       tzinfo
+    event_stream_parser (1.0.0)
     factory_bot (6.6.0)
       activesupport (>= 6.1.0)
     factory_bot_rails (6.5.1)
@@ -159,6 +160,8 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
+    faraday-multipart (1.2.0)
+      multipart-post (~> 2.0)
     faraday-net_http (3.4.4)
       net-http (~> 0.5)
     ferrum (0.17.2)
@@ -232,6 +235,7 @@ GEM
     msgpack (1.8.1)
     multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
+    multipart-post (2.4.1)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.4)
@@ -418,6 +422,10 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
+    ruby-openai (8.3.0)
+      event_stream_parser (>= 0.3.0, < 2.0.0)
+      faraday (>= 1)
+      faraday-multipart (>= 1)
     ruby-progressbar (1.13.0)
     sawyer (0.9.3)
       addressable (>= 2.3.5)
@@ -528,6 +536,7 @@ DEPENDENCIES
   resend
   rspec-rails (~> 8.0)
   rubocop-rails-omakase
+  ruby-openai (~> 8.3)
   simplecov
   simplecov_json_formatter
   solid_cable

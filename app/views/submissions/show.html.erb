@@ -30,6 +30,34 @@
     <% end %>
   </div>
 
+  <% if @submission.refined_title.present? && @submission.refined_body.present? %>
+    <div class="card mb-5 p-6">
+      <h2 class="mb-3 text-sm font-semibold text-stone-900 dark:text-stone-100">Refined story</h2>
+      <p class="text-sm font-medium text-stone-900 dark:text-stone-100"><%= @submission.refined_title %></p>
+      <p class="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-stone-700 dark:text-stone-300"><%= @submission.refined_body %></p>
+    </div>
+  <% end %>
+
+  <% if @submission.refinement_messages.any? %>
+    <details class="card mb-5 p-6">
+      <summary class="cursor-pointer text-sm font-semibold text-stone-900 dark:text-stone-100">Refinement chat transcript</summary>
+      <div class="mt-4 space-y-4 border-t border-stone-100 pt-4 dark:border-stone-800">
+        <% @submission.refinement_messages.chronological.each do |message| %>
+          <div>
+            <p class="text-xs font-medium uppercase tracking-wide text-stone-500"><%= message.collaborator? ? "Collaborator" : "Assistant" %></p>
+            <div class="mt-1 text-sm text-stone-700 dark:text-stone-300">
+              <% if message.assistant? %>
+                <%= render_refinement_markdown(message.body) %>
+              <% else %>
+                <p class="whitespace-pre-wrap"><%= message.body %></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+
   <% if @submission.status == "pending" %>
     <div class="flex items-center gap-3">
       <%= button_to "Accept", accept_project_submission_path(@project, @submission), method: :post, class: "btn-primary" %>

@@ -84,6 +84,23 @@ RSpec.describe Submission, type: :model do
     end
   end
 
+  describe "refinement cap helpers" do
+    it "#refinement_at_cap? is false with no collaborator replies" do
+      submission = create(:submission)
+      expect(submission).not_to be_refinement_at_cap
+      expect(submission.refinement_replies_remaining).to eq(2)
+    end
+
+    it "#refinement_at_cap? is true after max collaborator replies" do
+      submission = create(:submission)
+      Submission::MAX_REFINEMENT_COLLABORATOR_REPLIES.times do
+        create(:refinement_message, submission: submission, role: "collaborator", body: "reply")
+      end
+      expect(submission).to be_refinement_at_cap
+      expect(submission.refinement_replies_remaining).to eq(0)
+    end
+  end
+
   describe "guard predicates" do
     it "#acceptable? true when pending" do
       expect(build(:submission, status: "pending")).to be_acceptable

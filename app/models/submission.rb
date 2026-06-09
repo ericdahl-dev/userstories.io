@@ -1,8 +1,11 @@
 class Submission < ApplicationRecord
   GITHUB_SYNC_INTERVAL = 5.minutes
+  MAX_REFINEMENT_COLLABORATOR_REPLIES = 2
+  REFINEMENT_STATUSES = %w[pending processing completed failed].freeze
 
   belongs_to :collaborator
   belongs_to :project
+  has_many :refinement_messages, dependent: :destroy
 
   STATUSES = %w[pending accepted shipped dismissed].freeze
 
@@ -11,6 +14,7 @@ class Submission < ApplicationRecord
   validates :title, presence: true
   validates :body, presence: true
   validates :status, inclusion: { in: STATUSES }
+  validates :refinement_status, inclusion: { in: REFINEMENT_STATUSES }
 
   scope :pending_review, -> { where(status: "pending") }
   scope :accepted,       -> { where(status: "accepted") }
@@ -28,6 +32,42 @@ class Submission < ApplicationRecord
   def github_sync_due?
     github_status_trackable? &&
       (github_issue_synced_at.nil? || github_issue_synced_at <= GITHUB_SYNC_INTERVAL.ago)
+  end
+
+  def refinement_collaborator_reply_count
+    refinement_messages.where(role: "collaborator").count
+  end
+
+  def refinement_replies_remaining
+    [MAX_REFINEMENT_COLLABORATOR_REPLIES - refinement_collaborator_reply_count, 0].max
+  end
+
+  def refinement_at_cap?
+    refinement_collaborator_reply_count >= MAX_REFINEMENT_COLLABORATOR_REPLIES
+  end
+
+  def refinement_locked?
+    refinement_locked_at.present?
+  end
+
+  def refinement_processing?
+    refinement_status == "processing"
+  end
+
+  def refinement_chat_open?
+    !refinement_locked? && !refinement_at_cap?
+  end
+
+  def refinement_finalized?
+    refinement_locked_at.present?
+  end
+
+  def effective_title
+    use_refined_text? ? refined_title : title
+  end
+
+  def effective_body
+    use_refined_text? ? refined_body : body
   end
 
   def accept!(github_issue_number:, github_issue_url:)
@@ -50,5 +90,17 @@ class Submission < ApplicationRecord
     raise InvalidTransition, "can only ship accepted submissions" unless shippable?
 
     update!(status: "shipped")
+  end
+
+  def lock_refinement!
+    update!(refinement_locked_at: Time.current)
+  end
+
+  private
+
+  def use_refined_text?
+    refined_title.present? &&
+      refined_body.present? &&
+      (refinement_finalized? || refinement_status == "completed")
   end
 end
