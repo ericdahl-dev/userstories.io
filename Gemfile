@@ -24,6 +24,7 @@ gem "good_job"
 
 # GitHub API
 gem "octokit"
+gem "faraday-retry" # required by Octokit with Faraday 2.x
 
 # Transactional email
 gem "resend"
