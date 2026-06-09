@@ -96,6 +96,42 @@ RSpec.describe "Portal::Submissions", type: :request do
         get portal_submissions_path(share_token: project.share_token)
         expect(response.body).not_to include(other_submission.title)
       end
+
+      it "shows cached GitHub summary for accepted submissions" do
+        submission = create(
+          :submission,
+          collaborator: collaborator,
+          project: project,
+          status: "accepted",
+          github_issue_number: 42,
+          github_issue_url: "https://github.com/owner/repo/issues/42",
+          github_issue_summary: "Open · bug · updated 2 hours ago",
+          github_issue_synced_at: Time.current
+        )
+
+        get portal_submissions_path(share_token: project.share_token)
+
+        expect(response.body).to include(submission.github_issue_summary)
+        expect(response.body).to include(submission.github_issue_url)
+      end
+
+      it "enqueues a sync for stale GitHub issue metadata" do
+        stale_submission = create(
+          :submission,
+          collaborator: collaborator,
+          project: project,
+          status: "accepted",
+          github_issue_number: 42,
+          github_issue_url: "https://github.com/owner/repo/issues/42",
+          github_issue_synced_at: 6.minutes.ago
+        )
+
+        allow(SyncSubmissionGithubStatusJob).to receive(:perform_later)
+
+        get portal_submissions_path(share_token: project.share_token)
+
+        expect(SyncSubmissionGithubStatusJob).to have_received(:perform_later).with(stale_submission)
+      end
     end
   end
 end

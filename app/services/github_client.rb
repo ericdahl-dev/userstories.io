@@ -12,6 +12,12 @@ class GithubClient
     raise Error, e.message
   end
 
+  def get_issue(repo:, number:)
+    @client.issue(repo, number)
+  rescue Octokit::Error => e
+    raise Error, e.message
+  end
+
   def repos
     @client.repos(nil, sort: "pushed", per_page: 100).map(&:full_name).sort
   rescue Octokit::Error => e
