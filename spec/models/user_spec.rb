@@ -14,6 +14,42 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "github_token encryption" do
+    def raw_github_token(user)
+      User.connection.select_value("SELECT github_token FROM users WHERE id = #{user.id}")
+    end
+
+    it "stores ciphertext in the database, not plaintext" do
+      user = create(:user, github_token: "gho_secret_token_value")
+
+      expect(user.github_token).to eq("gho_secret_token_value")
+      expect(raw_github_token(user)).not_to eq("gho_secret_token_value")
+      expect(raw_github_token(user)).to be_present
+    end
+
+    it "round-trips github_token on read and write" do
+      user = create(:user, github_token: "initial_token")
+      user.update!(github_token: "rotated_token")
+
+      expect(user.reload.github_token).to eq("rotated_token")
+    end
+
+    it "re-encrypts legacy plaintext values" do
+      user = create(:user, email: "legacy@example.com")
+      User.connection.execute(
+        "UPDATE users SET github_token = 'legacy_plaintext_token' WHERE id = #{user.id}"
+      )
+
+      expect(raw_github_token(user.reload)).to eq("legacy_plaintext_token")
+
+      require Rails.root.join("db/migrate/20260609140000_encrypt_existing_github_tokens")
+      EncryptExistingGithubTokens.new.up
+
+      expect(user.reload.github_token).to eq("legacy_plaintext_token")
+      expect(raw_github_token(user)).not_to eq("legacy_plaintext_token")
+    end
+  end
+
   describe ".from_omniauth" do
     let(:auth) do
       OmniAuth::AuthHash.new(

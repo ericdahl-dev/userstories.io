@@ -15,16 +15,22 @@ class SubmissionsController < ApplicationController
 
   def accept
     authorize @submission
-    github = GithubIssueCreator.new(@submission)
-    result = github.create!
 
-    @submission.accept!(
-      github_issue_number: result[:number],
-      github_issue_url: result[:url]
-    )
+    @submission.with_lock do
+      raise Submission::InvalidTransition unless @submission.acceptable?
+
+      result = GithubIssueCreator.new(@submission).create!
+      @submission.accept!(
+        github_issue_number: result[:number],
+        github_issue_url: result[:url]
+      )
+    end
 
     redirect_to project_submission_path(@project, @submission),
                 notice: "Submission accepted and GitHub issue created."
+  rescue Submission::InvalidTransition
+    redirect_to project_submission_path(@project, @submission),
+                alert: "This submission has already been accepted or is no longer pending."
   rescue GithubIssueCreator::Error => e
     redirect_to project_submission_path(@project, @submission),
                 alert: "GitHub issue creation failed: #{e.message}"

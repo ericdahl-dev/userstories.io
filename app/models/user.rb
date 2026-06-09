@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  encrypts :github_token
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
          :omniauthable, omniauth_providers: [ :github ]
