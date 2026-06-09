@@ -12,12 +12,29 @@
   <div class="space-y-4">
     <div class="card p-5">
       <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-stone-500">Shareable portal link</p>
-      <div class="panel-inset flex items-center gap-3 px-3 py-2">
-        <code class="flex-1 truncate text-xs text-stone-700 dark:text-stone-300"><%= portal_url(share_token: @project.share_token) %></code>
-        <%= button_to "Rotate",
-              rotate_token_project_path(@project), method: :post,
-              data: { confirm: "This will invalidate the current link immediately. Continue?" },
-              class: "shrink-0 text-xs font-medium text-red-600 transition-colors duration-200 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" %>
+      <% portal_link = portal_url(share_token: @project.share_token) %>
+      <div data-controller="clipboard"
+           data-clipboard-text-value="<%= portal_link %>"
+           class="panel-inset flex flex-wrap items-center gap-2 px-3 py-2 sm:flex-nowrap sm:gap-3">
+        <code class="min-w-0 flex-1 truncate text-xs text-stone-700 dark:text-stone-300"><%= portal_link %></code>
+        <div class="flex shrink-0 items-center gap-2">
+          <button type="button"
+                  class="btn-secondary px-3 py-1.5 text-xs"
+                  data-action="clipboard#copy"
+                  aria-label="Copy portal link to clipboard">
+            Copy
+          </button>
+          <span data-clipboard-target="feedback"
+                class="hidden text-xs font-medium text-emerald-600 dark:text-emerald-400"
+                role="status"
+                aria-live="polite">
+            Copied!
+          </span>
+          <%= button_to "Rotate",
+                rotate_token_project_path(@project), method: :post,
+                data: { confirm: "This will invalidate the current link immediately. Continue?" },
+                class: "shrink-0 text-xs font-medium text-red-600 transition-colors duration-200 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" %>
+        </div>
       </div>
       <p class="mt-2 text-xs text-stone-500">Rotating this link immediately revokes access for anyone using the old URL.</p>
     </div>
