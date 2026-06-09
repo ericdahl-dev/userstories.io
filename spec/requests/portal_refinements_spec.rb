@@ -33,6 +33,10 @@ RSpec.describe "Portal::Refinements", type: :request do
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("Hello")
         expect(response.body).to include("2 replies remaining")
+        expect(response.body).to include("Chat with the assistant")
+        expect(response.body).to include('data-controller="refinement-finalize"')
+        expect(response.body).to include("Submit for review?")
+        expect(response.body).to include('class="btn-primary w-full"')
         expect(response.body).to include("turbo-cable-stream-source")
         expect(response.body).not_to include('http-equiv="refresh"')
       end
