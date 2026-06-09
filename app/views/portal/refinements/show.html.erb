@@ -11,6 +11,7 @@
       </div>
       <div class="flex items-center gap-3">
         <%= render "shared/theme_toggle" %>
+        <%= render "portal/sign_out_button", project: @project %>
         <%= link_to "All submissions", portal_submissions_path(share_token: @project.share_token), class: "btn-ghost text-xs" %>
       </div>
     </div>
