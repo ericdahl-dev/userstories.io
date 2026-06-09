@@ -34,6 +34,21 @@ class Submission < ApplicationRecord
       (github_issue_synced_at.nil? || github_issue_synced_at <= GITHUB_SYNC_INTERVAL.ago)
   end
 
+  def github_issue_status_pending?
+    github_issue_number.present? && github_issue_summary.blank?
+  end
+
+  def github_issue_status_unavailable?
+    github_issue_summary == SubmissionGithubSync::UNAVAILABLE_SUMMARY
+  end
+
+  def github_status_refresh_needed?
+    github_status_trackable? && (
+      github_issue_status_pending? ||
+      (status == "accepted" && github_sync_due?)
+    )
+  end
+
   def refinement_collaborator_reply_count
     refinement_messages.where(role: "collaborator").count
   end
@@ -58,6 +73,19 @@ class Submission < ApplicationRecord
     !refinement_locked? && !refinement_at_cap?
   end
 
+  def refinement_initial_due?
+    !refinement_locked? &&
+      RefinementQuotaGuard.allowed?(self) &&
+      refinement_messages.where(role: "assistant").none? &&
+      refinement_status.in?(%w[pending failed])
+  end
+
+  def refinement_turn_due?
+    return false if refinement_locked?
+
+    refinement_messages.chronological.last&.collaborator?
+  end
+
   def refinement_finalized?
     refinement_locked_at.present?
   end
@@ -76,7 +104,10 @@ class Submission < ApplicationRecord
     update!(
       status: "accepted",
       github_issue_number: github_issue_number,
-      github_issue_url: github_issue_url
+      github_issue_url: github_issue_url,
+      github_issue_state: "open",
+      github_issue_summary: "Open · just created",
+      github_issue_synced_at: Time.current
     )
   end
 

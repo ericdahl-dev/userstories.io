@@ -1,0 +1,31 @@
+<%# locals: (submission:, project:) %>
+<% composer_disabled = submission.refinement_locked? || submission.refinement_at_cap? || submission.refinement_processing? %>
+
+<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+  <% unless submission.refinement_locked? %>
+    <%= form_with url: portal_submission_refine_messages_path(share_token: project.share_token, id: submission),
+                  scope: :refinement_message,
+                  class: "flex-1",
+                  data: { controller: "refinement-form", action: "turbo:submit-start->refinement-form#submit" } do |f| %>
+      <%= f.text_area :body,
+            rows: 3,
+            disabled: composer_disabled,
+            placeholder: composer_disabled ? "Refinement chat is closed." : "Reply to refine your story…",
+            class: "w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-200 disabled:cursor-not-allowed disabled:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:placeholder:text-stone-500 dark:disabled:bg-stone-800",
+            data: { refinement_form_target: "body" } %>
+      <div class="mt-2">
+        <%= f.submit "Send",
+              disabled: composer_disabled,
+              class: "btn-secondary-sm disabled:cursor-not-allowed disabled:opacity-50",
+              data: { refinement_form_target: "submit" } %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% unless submission.refinement_locked? %>
+    <%= button_to "Submit for review",
+          portal_submission_refine_finalize_path(share_token: project.share_token, id: submission),
+          method: :post,
+          class: "btn-primary whitespace-nowrap" %>
+  <% end %>
+</div>

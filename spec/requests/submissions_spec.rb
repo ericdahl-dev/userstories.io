@@ -105,6 +105,7 @@ RSpec.describe "Submissions (developer triage)", type: :request do
         post accept_project_submission_path(project, submission)
         expect(submission.reload.github_issue_number).to eq(99)
         expect(submission.reload.github_issue_url).to eq("https://github.com/owner/repo/issues/99")
+        expect(submission.github_issue_summary).to eq("Open · just created")
       end
 
       it "redirects to submission with notice" do

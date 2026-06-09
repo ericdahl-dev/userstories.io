@@ -1,0 +1,24 @@
+<%# locals: (messages:, submission:) %>
+<div class="space-y-4">
+  <div class="flex justify-end">
+    <div class="max-w-[85%] rounded-2xl rounded-br-md bg-stone-900 px-4 py-3 text-sm text-white dark:bg-stone-100 dark:text-stone-900">
+      <p class="mb-1 text-xs font-medium opacity-70">Your original story</p>
+      <p class="font-medium"><%= submission.title %></p>
+      <p class="mt-2 whitespace-pre-wrap"><%= submission.body %></p>
+    </div>
+  </div>
+
+  <div id="refinement_messages" class="space-y-4">
+    <% messages.each do |message| %>
+      <%= render "portal/refinements/message", message: message %>
+    <% end %>
+
+    <% if submission.refinement_processing? %>
+      <%= render "portal/refinements/typing_indicator" %>
+    <% end %>
+
+    <% if submission.refinement_status == "failed" && messages.none? %>
+      <%= render "portal/refinements/failure_alert" %>
+    <% end %>
+  </div>
+</div>

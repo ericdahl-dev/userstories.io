@@ -48,6 +48,9 @@ RSpec.describe Submission, type: :model do
       expect(submission.reload.status).to eq("accepted")
       expect(submission.github_issue_number).to eq(42)
       expect(submission.github_issue_url).to eq("https://github.com/owner/repo/issues/42")
+      expect(submission.github_issue_state).to eq("open")
+      expect(submission.github_issue_summary).to eq("Open · just created")
+      expect(submission.github_issue_synced_at).to be_present
     end
 
     it "raises when submission is not pending" do
@@ -98,6 +101,52 @@ RSpec.describe Submission, type: :model do
       end
       expect(submission).to be_refinement_at_cap
       expect(submission.refinement_replies_remaining).to eq(0)
+    end
+  end
+
+  describe "refinement helpers" do
+    it "#refinement_initial_due? is true before the first assistant reply" do
+      submission = build(:submission, refinement_status: "pending")
+      expect(submission).to be_refinement_initial_due
+    end
+
+    it "#refinement_turn_due? is true when a collaborator reply awaits a response" do
+      submission = create(:submission)
+      create(:refinement_message, submission: submission, role: "assistant", body: "Draft")
+      create(:refinement_message, submission: submission, role: "collaborator", body: "More detail")
+
+      expect(submission).to be_refinement_turn_due
+    end
+  end
+
+  describe "GitHub status helpers" do
+    it "#github_issue_status_pending? is true without a cached summary" do
+      submission = build(:submission, github_issue_number: 42, github_issue_summary: nil)
+      expect(submission).to be_github_issue_status_pending
+    end
+
+    it "#github_status_refresh_needed? is true for accepted submissions due for refresh" do
+      submission = build(
+        :submission,
+        status: "accepted",
+        github_issue_number: 42,
+        github_issue_summary: "Open · bug",
+        github_issue_synced_at: 6.minutes.ago
+      )
+
+      expect(submission).to be_github_status_refresh_needed
+    end
+
+    it "#github_status_refresh_needed? is false for freshly synced shipped submissions" do
+      submission = build(
+        :submission,
+        status: "shipped",
+        github_issue_number: 42,
+        github_issue_summary: "Closed · shipped",
+        github_issue_synced_at: Time.current
+      )
+
+      expect(submission).not_to be_github_status_refresh_needed
     end
   end
 

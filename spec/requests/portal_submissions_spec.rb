@@ -41,8 +41,6 @@ RSpec.describe "Portal::Submissions", type: :request do
       before { sign_in_collaborator(collaborator) }
 
       it "creates a submission and redirects to refinement chat" do
-        allow(RefineSubmissionJob).to receive(:perform_later)
-
         expect {
           post portal_submissions_path(share_token: project.share_token),
                params: { submission: { title: "A story", body: "Some details" } }
@@ -50,7 +48,6 @@ RSpec.describe "Portal::Submissions", type: :request do
 
         submission = Submission.last
         expect(response).to redirect_to(portal_submission_refine_path(share_token: project.share_token, id: submission))
-        expect(RefineSubmissionJob).to have_received(:perform_later).with(submission)
       end
 
       it "creates submission with pending status" do
@@ -120,6 +117,68 @@ RSpec.describe "Portal::Submissions", type: :request do
         expect(response.body).to include(submission.github_issue_url)
       end
 
+      it "syncs GitHub status inline when summary is missing" do
+        submission = create(
+          :submission,
+          collaborator: collaborator,
+          project: project,
+          status: "accepted",
+          github_issue_number: 42,
+          github_issue_url: "https://github.com/owner/repo/issues/42"
+        )
+        fake_client = instance_double(GithubClient)
+        issue = double(
+          state: "open",
+          labels: [ double(name: "bug") ],
+          updated_at: 2.hours.ago
+        )
+
+        allow(GithubClient).to receive(:new).and_return(fake_client)
+        allow(fake_client).to receive(:get_issue).with(repo: project.github_repo, number: 42).and_return(issue)
+        allow(SyncSubmissionGithubStatusJob).to receive(:perform_later)
+
+        get portal_submissions_path(share_token: project.share_token)
+
+        expect(response.body).to include("Open · bug · updated about 2 hours ago")
+        expect(response.body).to include("View issue")
+        expect(response.body).not_to include("Checking GitHub status")
+        expect(SyncSubmissionGithubStatusJob).not_to have_received(:perform_later)
+      end
+
+      it "shows a loading state while GitHub status is still pending" do
+        submission = create(
+          :submission,
+          collaborator: collaborator,
+          project: project,
+          status: "accepted",
+          github_issue_number: 42,
+          github_issue_url: "https://github.com/owner/repo/issues/42"
+        )
+
+        allow(SubmissionGithubSync).to receive(:new).and_return(instance_double(SubmissionGithubSync, sync!: false))
+
+        get portal_submissions_path(share_token: project.share_token)
+
+        expect(response.body).to include("Checking GitHub status")
+      end
+
+      it "auto-refreshes only when GitHub status may still change" do
+        create(
+          :submission,
+          collaborator: collaborator,
+          project: project,
+          status: "shipped",
+          github_issue_number: 42,
+          github_issue_url: "https://github.com/owner/repo/issues/42",
+          github_issue_summary: "Closed · shipped",
+          github_issue_synced_at: Time.current
+        )
+
+        get portal_submissions_path(share_token: project.share_token)
+
+        expect(response.body).not_to include('http-equiv="refresh"')
+      end
+
       it "enqueues a sync for stale GitHub issue metadata" do
         stale_submission = create(
           :submission,
@@ -128,14 +187,18 @@ RSpec.describe "Portal::Submissions", type: :request do
           status: "accepted",
           github_issue_number: 42,
           github_issue_url: "https://github.com/owner/repo/issues/42",
+          github_issue_summary: "Open · bug · updated 2 hours ago",
           github_issue_synced_at: 6.minutes.ago
         )
 
         allow(SyncSubmissionGithubStatusJob).to receive(:perform_later)
+        allow(SubmissionGithubSync).to receive(:new)
 
         get portal_submissions_path(share_token: project.share_token)
 
+        expect(SubmissionGithubSync).not_to have_received(:new)
         expect(SyncSubmissionGithubStatusJob).to have_received(:perform_later).with(stale_submission)
+        expect(response.body).to include('http-equiv="refresh" content="30"')
       end
     end
   end

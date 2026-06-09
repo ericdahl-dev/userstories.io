@@ -1,6 +1,8 @@
 <% content_for :title, "Your submissions - #{@project.name}" %>
-<% content_for :head do %>
-  <meta http-equiv="refresh" content="60">
+<% if @refresh_github_status %>
+  <% content_for :head do %>
+    <meta http-equiv="refresh" content="30">
+  <% end %>
 <% end %>
 
 <div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
@@ -57,11 +59,7 @@
                   </p>
                 <% end %>
                 <% if submission.github_issue_number.present? && submission.github_issue_url.present? %>
-                  <p class="mt-2 text-xs text-stone-500 dark:text-stone-400">
-                    <%= submission.github_issue_summary.presence || "Syncing GitHub status..." %>
-                    ·
-                    <%= link_to "View GitHub issue", submission.github_issue_url, class: "link-accent", target: "_blank", rel: "noopener noreferrer" %>
-                  </p>
+                  <%= render "portal/submissions/github_issue_status", submission: submission %>
                 <% end %>
               </div>
               <%= render "shared/status_badge", status: submission.status %>

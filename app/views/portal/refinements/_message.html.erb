@@ -1,0 +1,14 @@
+<%# locals: (message:) %>
+<% if message.collaborator? %>
+  <%= tag.div id: dom_id(message), class: "flex justify-end" do %>
+    <div class="max-w-[85%] rounded-2xl rounded-br-md bg-stone-900 px-4 py-3 text-sm text-white dark:bg-stone-100 dark:text-stone-900">
+      <p class="whitespace-pre-wrap"><%= message.body %></p>
+    </div>
+  <% end %>
+<% else %>
+  <%= tag.div id: dom_id(message), class: "flex justify-start" do %>
+    <div class="max-w-[85%] rounded-2xl rounded-bl-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
+      <div class="prose-refinement"><%= render_refinement_markdown(message.body) %></div>
+    </div>
+  <% end %>
+<% end %>
