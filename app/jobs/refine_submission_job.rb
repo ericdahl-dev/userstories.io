@@ -11,7 +11,7 @@ class RefineSubmissionJob < ApplicationJob
     submission.update!(refinement_status: "completed")
 
     message = submission.refinement_messages.where(role: "assistant").order(created_at: :desc).first
-    RefinementChatBroadcaster.new(submission).complete_assistant_reply!(message) if message
+    broadcast_assistant_reply!(submission, message) if message
   rescue LlmClient::Error, SubmissionRefiner::Error => e
     mark_failed!(submission, e.message)
   end
@@ -25,6 +25,18 @@ class RefineSubmissionJob < ApplicationJob
 
   def mark_failed!(submission, _message = nil)
     submission.update!(refinement_status: "failed")
+    broadcast_processing_failed!(submission)
+  end
+
+  def broadcast_assistant_reply!(submission, message)
+    RefinementChatBroadcaster.new(submission).complete_assistant_reply!(message)
+  rescue StandardError => e
+    Rails.logger.warn("[RefineSubmissionJob] Turbo broadcast failed: #{e.class}: #{e.message}")
+  end
+
+  def broadcast_processing_failed!(submission)
     RefinementChatBroadcaster.new(submission).processing_failed!
+  rescue StandardError => e
+    Rails.logger.warn("[RefineSubmissionJob] Turbo broadcast failed: #{e.class}: #{e.message}")
   end
 end

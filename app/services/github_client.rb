@@ -30,7 +30,7 @@ class GithubClient
     return nil unless entry.type == "file"
     return nil if entry.size.to_i > max_bytes
 
-    Base64.decode64(entry.content.to_s)
+    decode_file_content(entry.content.to_s)
   rescue Octokit::NotFound
     nil
   rescue Octokit::Error => e
@@ -54,6 +54,10 @@ class GithubClient
   end
 
   private
+
+  def decode_file_content(encoded)
+    Base64.decode64(encoded).encode("UTF-8", invalid: :replace, undef: :replace, replace: "")
+  end
 
   def skip_path?(path, size)
     return true if size > 8.kilobytes

@@ -38,6 +38,12 @@ class GithubRepoContext
   def fetch_bundle
     return {} if @project.github_repo.blank? || @developer.github_token.blank?
 
+    fetch_bundle!
+  rescue GithubClient::Error
+    {}
+  end
+
+  def fetch_bundle!
     bundle = {}
     total_bytes = 0
 

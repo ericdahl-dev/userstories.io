@@ -30,4 +30,11 @@ RSpec.describe GithubRepoContext do
   it "returns placeholder when no files are available" do
     expect(context.to_prompt).to eq("(No repository source available.)")
   end
+
+  it "returns placeholder when GitHub API errors" do
+    allow(fake_client).to receive(:directory_paths)
+      .and_raise(GithubClient::Error, "rate limit exceeded")
+
+    expect(context.to_prompt).to eq("(No repository source available.)")
+  end
 end
