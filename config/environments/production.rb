@@ -55,16 +55,8 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "userstories.io"), protocol: "https" }
 
-  # Resend SMTP relay
-  config.action_mailer.delivery_method = :smtp
-  config.action_mailer.smtp_settings = {
-    address: "smtp.resend.com",
-    port: 587,
-    user_name: "resend",
-    password: Rails.application.credentials.dig(:resend, :api_key),
-    authentication: :login,
-    enable_starttls_auto: true
-  }
+  # Resend — native HTTP API adapter (avoids SMTP port issues)
+  config.action_mailer.delivery_method = :resend
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
