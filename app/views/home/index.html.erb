@@ -1,102 +1,98 @@
 <% content_for :title, "userstories.io - Stakeholder feedback, structured and in GitHub" %>
+<% content_for :meta_description, "Collect user stories from collaborators via a shareable link. Triage in your inbox and open GitHub issues when you accept." %>
 
-<div class="min-h-[100dvh] bg-white dark:bg-gray-950 flex flex-col">
+<div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
 
-  <%# Nav %>
-  <header class="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
+  <header class="border-b border-stone-200/80 bg-white/80 px-6 py-4 backdrop-blur-md dark:border-stone-800 dark:bg-stone-950/80">
+    <div class="mx-auto flex max-w-6xl items-center justify-between">
       <%= render "shared/logo" %>
       <div class="flex items-center gap-3">
         <%= render "shared/theme_toggle" %>
         <% if user_signed_in? %>
-          <%= link_to "Go to dashboard", dashboard_path,
-                class: "inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors" %>
+          <%= link_to "Go to dashboard", dashboard_path, class: "btn-primary-sm" %>
         <% else %>
           <%= button_to "Sign in with GitHub",
                 user_github_omniauth_authorize_path,
-                class: "inline-flex items-center gap-2 px-3.5 py-2 bg-gray-900 dark:bg-gray-100 dark:text-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-700 dark:hover:bg-gray-200 transition-colors",
+                class: "btn-github px-3.5 py-2",
                 data: { turbo: false } %>
         <% end %>
       </div>
     </div>
   </header>
 
-  <%# Hero %>
-  <section class="flex-1 flex items-center px-6 py-20">
-    <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center w-full">
-      <div>
-        <p class="text-xs font-medium tracking-widest text-indigo-500 uppercase mb-5">For developers on GitHub</p>
-        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-gray-50 leading-[1.1] mb-6">
-          Stakeholder feedback,<br>structured and in GitHub.
+  <section class="flex flex-1 items-center px-6 py-16 sm:py-24">
+    <div class="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+      <div class="max-w-xl">
+        <p class="mb-5 text-sm font-medium italic text-brand-700 dark:text-brand-400">For developers on GitHub</p>
+        <h1 class="text-balance text-4xl font-bold leading-[1.08] tracking-[-0.03em] text-stone-950 sm:text-5xl lg:text-[3.25rem] dark:text-stone-50">
+          Stakeholder feedback, structured and in GitHub.
         </h1>
-        <p class="text-base text-gray-500 dark:text-gray-400 leading-relaxed max-w-sm mb-8">
-          Share a link. Your collaborators submit stories in plain language. You triage them and a GitHub issue is created on acceptance.
+        <p class="text-pretty mt-6 max-w-md text-base leading-relaxed text-stone-600 dark:text-stone-400">
+          Share a link. Collaborators submit stories in plain language. You triage them, and a GitHub issue is created when you accept.
         </p>
-        <div class="flex flex-col sm:flex-row items-start gap-3">
+        <div class="mt-9 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
           <%= button_to "Get started with GitHub",
                 user_github_omniauth_authorize_path,
-                class: "inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 active:scale-[0.98] transition-all",
+                class: "btn-primary px-5",
                 data: { turbo: false } %>
-          <span class="text-sm text-gray-400 dark:text-gray-500 self-center">Free to use. No credit card.</span>
+          <span class="text-sm text-stone-500 dark:text-stone-500">Free to use. No credit card.</span>
         </div>
       </div>
 
       <div class="hidden lg:block">
-        <div class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 space-y-3">
-          <p class="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-4">Triage inbox</p>
+        <div class="hero-preview rotate-1 space-y-3 lg:-rotate-1">
+          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">Triage inbox</p>
           <% [
             { title: "Add dark mode to the dashboard", name: "Maya R.", project: "Horizon App", status: "pending" },
             { title: "Export submissions as CSV", name: "Tom B.", project: "Horizon App", status: "pending" },
             { title: "Show estimated delivery date on orders", name: "Priya K.", project: "Storefront", status: "accepted" },
           ].each_with_index do |item, i| %>
-            <div class="bg-white dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl px-4 py-3.5 flex items-start justify-between gap-3 <%= i == 0 ? 'ring-2 ring-indigo-500 ring-offset-1 dark:ring-offset-gray-900' : '' %>">
+            <div class="surface-elevated flex items-start justify-between gap-3 rounded-xl border border-stone-200 px-4 py-3.5 dark:border-stone-800 <%= i == 0 ? 'ring-2 ring-brand-600/40 ring-offset-2 ring-offset-stone-100 dark:ring-offset-stone-900' : '' %>">
               <div class="min-w-0">
-                <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"><%= item[:title] %></p>
-                <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5"><%= item[:name] %> &middot; <%= item[:project] %></p>
+                <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100"><%= item[:title] %></p>
+                <p class="mt-0.5 text-xs text-stone-500"><%= item[:name] %> &middot; <%= item[:project] %></p>
               </div>
-              <% if item[:status] == "pending" %>
-                <span class="shrink-0 text-[10px] font-medium bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded-full">pending</span>
-              <% else %>
-                <span class="shrink-0 text-[10px] font-medium bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-full">accepted</span>
-              <% end %>
+              <%= render "shared/status_badge", status: item[:status] %>
             </div>
           <% end %>
-          <div class="pt-2 flex items-center gap-2">
-            <span class="inline-block w-1.5 h-1.5 rounded-full bg-green-500"></span>
-            <p class="text-xs text-gray-400 dark:text-gray-500">2 pending &middot; 1 accepted this week</p>
+          <div class="flex items-center gap-2 pt-2">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            <p class="tabular-nums text-xs text-stone-500">2 pending &middot; 1 accepted this week</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <%# Steps %>
-  <section class="border-t border-gray-900 px-6 py-16 bg-gray-950">
-    <div class="max-w-6xl mx-auto">
-      <div class="grid sm:grid-cols-3 gap-0 divide-y sm:divide-y-0 sm:divide-x divide-gray-800">
-        <div class="pb-8 sm:pb-0 sm:pr-12">
-          <p class="text-xs font-mono text-gray-500 mb-3">01</p>
-          <h3 class="text-sm font-semibold text-white mb-2">Connect your repo</h3>
-          <p class="text-sm text-gray-400 leading-relaxed">Sign in with GitHub and link a project to any repository you own.</p>
-        </div>
-        <div class="py-8 sm:py-0 sm:px-12">
-          <p class="text-xs font-mono text-gray-500 mb-3">02</p>
-          <h3 class="text-sm font-semibold text-white mb-2">Share a link</h3>
-          <p class="text-sm text-gray-400 leading-relaxed">Send your portal link to stakeholders. They sign in with their email, no GitHub account needed.</p>
-        </div>
-        <div class="pt-8 sm:pt-0 sm:pl-12">
-          <p class="text-xs font-mono text-gray-500 mb-3">03</p>
-          <h3 class="text-sm font-semibold text-white mb-2">Accept to ship</h3>
-          <p class="text-sm text-gray-400 leading-relaxed">Review submissions in your inbox. Accept what's actionable and a GitHub issue is created instantly.</p>
-        </div>
+  <section class="border-t border-stone-200 bg-stone-100/60 px-6 py-20 dark:border-stone-800 dark:bg-stone-900/40">
+    <div class="mx-auto max-w-6xl">
+      <div class="mb-12 max-w-lg">
+        <h2 class="text-balance text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">How it works</h2>
+        <p class="text-pretty mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">Three steps from repo to structured feedback in your workflow.</p>
       </div>
+
+      <ol class="grid gap-10 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+        <% [
+          { step: "01", title: "Connect your repo", body: "Sign in with GitHub and link a project to any repository you own." },
+          { step: "02", title: "Share a link", body: "Send your portal link to stakeholders. They sign in with email — no GitHub account needed." },
+          { step: "03", title: "Accept to ship", body: "Review submissions in your inbox. Accept what's actionable and a GitHub issue is created instantly." },
+        ].each do |item| %>
+          <li class="group">
+            <p class="mb-3 font-mono text-xs tabular-nums text-brand-700 dark:text-brand-400"><%= item[:step] %></p>
+            <h3 class="mb-2 text-base font-semibold text-stone-900 dark:text-stone-100"><%= item[:title] %></h3>
+            <p class="text-sm leading-relaxed text-stone-600 dark:text-stone-400"><%= item[:body] %></p>
+          </li>
+        <% end %>
+      </ol>
     </div>
   </section>
 
-  <footer class="bg-gray-950 border-t border-gray-800 px-6 py-6">
-    <div class="max-w-6xl mx-auto flex items-center justify-between text-xs text-gray-600">
-      <%= render "shared/logo", text_class: "text-xs text-gray-500", icon_class: "w-5 h-5" %>
-      <span>&copy; <%= Date.today.year %></span>
+  <footer class="border-t border-stone-200 px-6 py-8 dark:border-stone-800">
+    <div class="mx-auto flex max-w-6xl flex-col gap-4 text-xs text-stone-500 sm:flex-row sm:items-center sm:justify-between">
+      <%= render "shared/logo", text_class: "text-xs text-stone-500", icon_class: "w-5 h-5" %>
+      <div class="flex items-center gap-4">
+        <span>&copy; <%= Date.today.year %> userstories.io</span>
+      </div>
     </div>
   </footer>
 

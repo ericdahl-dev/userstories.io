@@ -2,34 +2,35 @@
 
 <%= render "shared/developer_nav" %>
 
-<main class="max-w-4xl mx-auto px-6 py-10">
+<main id="main-content" class="mx-auto max-w-4xl px-6 py-10">
   <div class="mb-8">
-    <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Triage inbox</h1>
-    <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">Review pending submissions from your collaborators.</p>
+    <h1 class="text-xl font-semibold text-stone-900 dark:text-stone-100">Triage inbox</h1>
+    <p class="mt-0.5 text-sm text-stone-500">Review pending submissions from your collaborators.</p>
   </div>
 
   <% if @pending_submissions.any? %>
-    <ul class="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
+    <ul class="card-list">
       <% @pending_submissions.each do |submission| %>
         <li>
-          <%= link_to project_submission_path(submission.project, submission), class: "flex items-start justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" do %>
+          <%= link_to project_submission_path(submission.project, submission), class: "flex items-start justify-between gap-4 px-5 py-4 transition-colors duration-200 hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-600 dark:hover:bg-stone-800/60" do %>
             <div class="min-w-0">
-              <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate"><%= submission.title %></p>
-              <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                <span class="font-medium text-gray-500 dark:text-gray-400"><%= submission.project.name %></span>
+              <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100"><%= submission.title %></p>
+              <p class="mt-1 text-xs text-stone-500">
+                <span class="font-medium text-stone-600 dark:text-stone-400"><%= submission.project.name %></span>
                 &middot; <%= submission.collaborator.name %>
                 &middot; <%= submission.created_at.strftime("%b %-d") %>
               </p>
             </div>
-            <span class="shrink-0 mt-0.5 text-[10px] font-medium bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded-full">pending</span>
+            <%= render "shared/status_badge", status: "pending" %>
           <% end %>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <div class="border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 px-6 py-16 text-center">
-      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">Inbox zero</p>
-      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">No pending submissions to review.</p>
+    <div class="empty-state">
+      <p class="text-sm font-semibold text-stone-900 dark:text-stone-100">Inbox zero</p>
+      <p class="text-pretty mx-auto mt-2 max-w-sm text-sm text-stone-500">No pending submissions right now. When collaborators submit stories through your portal links, they will show up here.</p>
+      <%= link_to "View projects", projects_path, class: "link-accent mt-5 inline-block text-sm" %>
     </div>
   <% end %>
 </main>

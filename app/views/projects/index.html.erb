@@ -2,35 +2,34 @@
 
 <%= render "shared/developer_nav" %>
 
-<main class="max-w-4xl mx-auto px-6 py-10">
-  <div class="flex items-center justify-between mb-8">
+<main id="main-content" class="mx-auto max-w-4xl px-6 py-10">
+  <div class="mb-8 flex items-center justify-between gap-4">
     <div>
-      <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Projects</h1>
-      <p class="text-sm text-gray-400 dark:text-gray-500 mt-0.5">Each project has a shareable portal link for collaborators.</p>
+      <h1 class="text-xl font-semibold text-stone-900 dark:text-stone-100">Projects</h1>
+      <p class="mt-0.5 text-sm text-stone-500">Each project has a shareable portal link for collaborators.</p>
     </div>
-    <%= link_to "New project", new_project_path,
-          class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors" %>
+    <%= link_to "New project", new_project_path, class: "btn-primary shrink-0" %>
   </div>
 
   <% if @projects.any? %>
-    <ul class="divide-y divide-gray-100 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden bg-white dark:bg-gray-900">
+    <ul class="card-list">
       <% @projects.each do |project| %>
-        <li class="flex items-center justify-between gap-4 px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+        <li class="flex items-center justify-between gap-4 px-5 py-4 transition-colors duration-200 hover:bg-stone-50 dark:hover:bg-stone-800/60">
           <div class="min-w-0">
-            <%= link_to project.name, project_path(project), class: "text-sm font-medium text-gray-900 dark:text-gray-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors" %>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 font-mono"><%= project.github_repo %></p>
+            <%= link_to project.name, project_path(project), class: "text-sm font-medium text-stone-900 transition-colors duration-200 hover:text-brand-700 dark:text-stone-100 dark:hover:text-brand-400" %>
+            <p class="mt-0.5 font-mono text-xs text-stone-500"><%= project.github_repo %></p>
           </div>
-          <div class="flex items-center gap-3 shrink-0">
-            <%= link_to "Submissions", project_submissions_path(project), class: "text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" %>
-            <%= link_to "Edit", edit_project_path(project), class: "text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" %>
+          <div class="flex shrink-0 items-center gap-3">
+            <%= link_to "Submissions", project_submissions_path(project), class: "btn-ghost text-xs" %>
+            <%= link_to "Edit", edit_project_path(project), class: "btn-ghost text-xs" %>
           </div>
         </li>
       <% end %>
     </ul>
   <% else %>
-    <div class="border border-gray-200 dark:border-gray-800 rounded-xl bg-white dark:bg-gray-900 px-6 py-16 text-center">
-      <p class="text-sm font-medium text-gray-900 dark:text-gray-100">No projects yet</p>
-      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1"><%= link_to "Create your first project", new_project_path, class: "text-indigo-600 dark:text-indigo-400 hover:underline" %> to get started.</p>
+    <div class="empty-state">
+      <p class="text-sm font-semibold text-stone-900 dark:text-stone-100">No projects yet</p>
+      <p class="mt-2 text-sm text-stone-500"><%= link_to "Create your first project", new_project_path, class: "link-accent" %> to connect a repo and share a portal link.</p>
     </div>
   <% end %>
 </main>
