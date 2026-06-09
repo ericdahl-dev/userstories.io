@@ -106,6 +106,22 @@ _(add environment-specific gotchas here as they are discovered)_
 - macOS: `PGGSSENCMODE=disable` initializer present at
   `config/initializers/0_pg_gssenc_fork_safety.rb` — do not remove
 
+## Secrets Management
+
+Secrets are stored in **Doppler** (project: `userstories`, config: `prd`) and synced
+to Coolify env vars via:
+
+```bash
+./script/sync_doppler_to_coolify.sh
+```
+
+To rotate or update a secret:
+1. Update the value in Doppler (`doppler secrets set --project userstories --config prd KEY value`)
+2. Run the sync script to push to Coolify and restart the app
+
+Do **not** edit env vars directly in the Coolify dashboard — they will be overwritten
+on the next sync. Doppler is the source of truth.
+
 ## Agent skills
 
 ### Issue tracker
