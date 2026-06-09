@@ -1,3 +1,13 @@
+def umami_analytics_origin
+  script_url = ENV["UMAMI_SCRIPT_URL"].presence
+  return unless script_url
+
+  uri = URI.parse(script_url)
+  "#{uri.scheme}://#{uri.host}"
+rescue URI::InvalidURIError
+  nil
+end
+
 Rails.application.configure do
   config.content_security_policy do |policy|
     policy.default_src :self

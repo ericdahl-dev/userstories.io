@@ -1,5 +1,8 @@
 <% content_for :title, "userstories.io - Stakeholder feedback, structured and in GitHub" %>
 <% content_for :meta_description, "Collect user stories from collaborators via a shareable link. Triage in your inbox and open GitHub issues when you accept." %>
+<% content_for :head do %>
+  <%= render "shared/umami" %>
+<% end %>
 
 <div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
 
