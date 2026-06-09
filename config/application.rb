@@ -38,5 +38,8 @@ module UserstoriesIo
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # Allow reading legacy plaintext github_token values during re-encryption rollout.
+    config.active_record.encryption.support_unencrypted_data = true
   end
 end
