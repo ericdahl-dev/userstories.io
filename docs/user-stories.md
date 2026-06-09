@@ -11,7 +11,7 @@ Stories are organized by actor. Each story includes acceptance criteria and a st
 ### Authentication & Onboarding
 
 **US-001** — Connect GitHub account
-`ready`
+`done`
 > As a developer, I want to sign in with my GitHub account, so that I can connect my
 > repositories without managing a separate password.
 
@@ -24,7 +24,7 @@ Acceptance criteria:
 ---
 
 **US-002** — Create a project linked to a GitHub repo
-`ready`
+`done`
 > As a developer, I want to create a project linked to one of my GitHub repositories,
 > so that accepted stories automatically become issues in the right place.
 
@@ -36,7 +36,7 @@ Acceptance criteria:
 ---
 
 **US-003** — Get a shareable link for a project
-`ready`
+`done`
 > As a developer, I want to copy a shareable link for my project, so that I can send
 > it to collaborators without managing invitations.
 
@@ -48,7 +48,7 @@ Acceptance criteria:
 ---
 
 **US-004** — Rotate a project's shareable link
-`draft`
+`done`
 > As a developer, I want to rotate my project's shareable link, so that I can revoke
 > access for collaborators who should no longer submit stories.
 
@@ -63,7 +63,7 @@ Acceptance criteria:
 ### Triage Inbox
 
 **US-005** — View pending submissions
-`ready`
+`done`
 > As a developer, I want to see all pending submissions for my projects in a triage
 > inbox, so that I can review and act on collaborator feedback.
 
@@ -76,7 +76,7 @@ Acceptance criteria:
 ---
 
 **US-006** — Review a submission
-`ready`
+`done`
 > As a developer, I want to read the full content of a submission, so that I can decide
 > whether to accept it.
 
@@ -88,7 +88,7 @@ Acceptance criteria:
 ---
 
 **US-007** — Accept a submission and create a GitHub issue
-`ready`
+`done`
 > As a developer, I want to accept a submission, so that a GitHub issue is automatically
 > created in my repository and the story enters my tracked backlog.
 
@@ -102,7 +102,7 @@ Acceptance criteria:
 ---
 
 **US-008** — Dismiss a submission
-`draft`
+`done`
 > As a developer, I want to dismiss a submission I don't intend to act on, so that my
 > inbox stays focused on actionable items.
 
@@ -118,7 +118,7 @@ Acceptance criteria:
 ### Access & Authentication
 
 **US-009** — Access a project via shareable link
-`ready`
+`done`
 > As a collaborator, I want to access a project's submission portal via a link the
 > developer shared with me, so that I don't need a GitHub account or a pre-existing
 > userstories.io account.
@@ -131,7 +131,7 @@ Acceptance criteria:
 ---
 
 **US-010** — Log in via magic link
-`ready`
+`done`
 > As a collaborator, I want to enter my email and receive a one-click login link, so
 > that I can access my submissions without creating a password.
 
@@ -146,7 +146,7 @@ Acceptance criteria:
 ---
 
 **US-011** — Stay logged in across visits
-`ready`
+`done`
 > As a collaborator, I want my session to persist across browser sessions, so that I
 > don't have to re-authenticate every time I return.
 
@@ -160,21 +160,21 @@ Acceptance criteria:
 ### Submitting Stories
 
 **US-012** — Submit a user story
-`ready`
+`done`
 > As a collaborator, I want to write and submit a user story, so that the developer
 > can consider it for their backlog.
 
 Acceptance criteria:
 - Submission form has a title field and a body field
 - Both fields are required
-- Successful submission shows a confirmation message
-- Submission appears in the collaborator's submissions view with `pending` status
-- Submission appears in the developer's triage inbox
+- Successful submission redirects to refinement chat with confirmation: *"Story received — let's refine it before review"*
+- Submission is created immediately with `pending` status (visible in submissions list even if refinement is skipped)
+- Submission appears in the developer's triage inbox after collaborator submits for review
 
 ---
 
 **US-013** — View my previous submissions
-`ready`
+`done`
 > As a collaborator, I want to see all the stories I've submitted, so that I know what
 > I've already suggested and can track their progress.
 
@@ -187,21 +187,21 @@ Acceptance criteria:
 ---
 
 **US-014** — Know when my story has shipped
-`draft`
+`done`
 > As a collaborator, I want to see when a story I submitted has been delivered, so that
 > I know my feedback had an impact.
 
 Acceptance criteria:
-- Submission status shows `shipped` when the corresponding GitHub issue is closed
-- For MVP: developer can manually mark a submission as shipped
+- Submission status shows `shipped` when the corresponding GitHub issue is closed (synced automatically) or when the developer marks it shipped manually
 - Shipped stories are visually distinct in the submissions list
+- GitHub issue summary is shown for accepted and shipped submissions
 
 ---
 
 ## Platform
 
 **US-015** — Branded landing page
-`ready`
+`done`
 > As a visitor, I want to understand what userstories.io does from the home page, so
 > that I can decide whether it's right for my team.
 
@@ -211,3 +211,11 @@ Acceptance criteria:
 - Page is mobile-friendly
 
 ---
+
+## Post-MVP (not in original MVP scope)
+
+These features shipped after the initial MVP but are not tracked as MVP user stories:
+
+- **AI-assisted story refinement chat** — optional refinement step after initial submission (see ADR 0006)
+- **GitHub issue status sync** — automatic `shipped` transition when linked issues close
+- **Dark mode** — theme toggle across developer and collaborator surfaces

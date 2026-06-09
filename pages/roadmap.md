@@ -17,14 +17,14 @@ permalink: /roadmap/
     <h2>Shipped</h2>
     <ul class="roadmap-list roadmap-done">
       <li>GitHub OAuth for developers</li>
-      <li>Projects linked to repositories</li>
+      <li>Projects linked to repositories (create and edit with repo picker)</li>
       <li>Shareable collaborator portal links</li>
+      <li>Rotate shareable links to revoke access</li>
       <li>Magic-link authentication for collaborators</li>
       <li>Submission form with triage inbox</li>
       <li>Accept → GitHub issue creation</li>
+      <li>Dismiss submissions from triage inbox</li>
       <li>Collaborator submission history with status</li>
-      <li>AI-assisted story refinement chat</li>
-      <li>GitHub issue status sync (<code>shipped</code>)</li>
       <li>Encrypted GitHub token storage</li>
       <li>Branded landing page and design system</li>
     </ul>
@@ -33,10 +33,20 @@ permalink: /roadmap/
 
 <section class="section section-muted">
   <div class="container narrow">
-    <h2>In progress / next up</h2>
+    <h2>Beyond MVP</h2>
+    <p class="lede">Shipped after the core workflow was proven — not part of the original MVP scope.</p>
+    <ul class="roadmap-list roadmap-done">
+      <li>AI-assisted story refinement chat</li>
+      <li>GitHub issue status sync (<code>shipped</code>)</li>
+      <li>Dark mode</li>
+    </ul>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container narrow">
+    <h2>Next up</h2>
     <ul class="roadmap-list roadmap-next">
-      <li>Rotate shareable portal links to revoke access</li>
-      <li>Dismiss submissions from triage inbox</li>
       <li>Story templates for collaborators</li>
       <li>Status notifications when stories ship</li>
       <li>Team-level views across multiple repos</li>
@@ -44,7 +54,7 @@ permalink: /roadmap/
   </div>
 </section>
 
-<section class="section">
+<section class="section section-muted">
   <div class="container narrow">
     <h2>The wedge</h2>
     <p>

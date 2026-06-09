@@ -21,8 +21,8 @@ class ProjectsController < ApplicationController
   def github_repos
     return redirect_to new_project_path unless turbo_frame_request?
 
-    @project = Project.new
-    authorize @project, :create?
+    @project = github_repos_project
+    authorize @project, @project.persisted? ? :update? : :create?
     @github_repos = fetch_github_repos
     render partial: "github_repo_field", locals: { project: @project, github_repos: @github_repos, form: nil }
   end
@@ -41,6 +41,7 @@ class ProjectsController < ApplicationController
 
   def edit
     authorize @project
+    @github_repos = fetch_github_repos
   end
 
   def update
@@ -49,6 +50,7 @@ class ProjectsController < ApplicationController
     if @project.update(project_params)
       redirect_to @project, notice: "Project updated."
     else
+      @github_repos = fetch_github_repos
       render :edit, status: :unprocessable_entity
     end
   end
@@ -79,5 +81,13 @@ class ProjectsController < ApplicationController
     GithubClient.new(current_user.github_token).repos
   rescue GithubClient::Error
     nil
+  end
+
+  def github_repos_project
+    if params[:project_id].present?
+      Project.find(params[:project_id])
+    else
+      Project.new(github_repo: params[:github_repo])
+    end
   end
 end

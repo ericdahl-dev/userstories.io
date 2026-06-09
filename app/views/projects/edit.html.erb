@@ -25,8 +25,7 @@
     </div>
 
     <div>
-      <%= f.label :github_repo, "GitHub repository", class: "mb-1.5 block text-sm font-medium text-stone-700 dark:text-stone-300" %>
-      <%= f.text_field :github_repo, placeholder: "owner/repo", class: "input-field font-mono" %>
+      <%= render "github_repo_field", form: f, github_repos: @github_repos, project: @project %>
     </div>
 
     <%= f.submit "Save changes", class: "btn-primary w-full cursor-pointer" %>
