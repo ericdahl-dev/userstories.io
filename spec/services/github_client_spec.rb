@@ -27,6 +27,20 @@ RSpec.describe GithubClient do
     end
   end
 
+  describe "#get_issue" do
+    let(:fake_issue) { double(:issue) }
+
+    it "delegates to Octokit and returns the issue" do
+      allow(fake_octokit).to receive(:issue).with("o/r", 7).and_return(fake_issue)
+      expect(client.get_issue(repo: "o/r", number: 7)).to eq(fake_issue)
+    end
+
+    it "raises GithubClient::Error on Octokit::Error" do
+      allow(fake_octokit).to receive(:issue).and_raise(Octokit::Error)
+      expect { client.get_issue(repo: "o/r", number: 7) }.to raise_error(GithubClient::Error)
+    end
+  end
+
   describe "#repos" do
     let(:fake_repos) { [ double(full_name: "o/r1"), double(full_name: "o/r2") ] }
 

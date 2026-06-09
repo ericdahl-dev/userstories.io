@@ -1,4 +1,6 @@
 class Submission < ApplicationRecord
+  GITHUB_SYNC_INTERVAL = 5.minutes
+
   belongs_to :collaborator
   belongs_to :project
 
@@ -18,6 +20,15 @@ class Submission < ApplicationRecord
   def acceptable?  = status == "pending"
   def dismissable? = status == "pending"
   def shippable?   = status == "accepted"
+
+  def github_status_trackable?
+    github_issue_number.present? && status.in?(%w[accepted shipped])
+  end
+
+  def github_sync_due?
+    github_status_trackable? &&
+      (github_issue_synced_at.nil? || github_issue_synced_at <= GITHUB_SYNC_INTERVAL.ago)
+  end
 
   def accept!(github_issue_number:, github_issue_url:)
     raise InvalidTransition, "can only accept pending submissions" unless acceptable?
