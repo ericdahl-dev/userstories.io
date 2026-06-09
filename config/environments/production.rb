@@ -53,7 +53,7 @@ Rails.application.configure do
   config.action_mailer.raise_delivery_errors = true
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "userstories.io"), protocol: "https" }
+  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", nil).presence || "userstories.io", protocol: "https" }
 
   # Resend — native HTTP API adapter (avoids SMTP port issues)
   config.action_mailer.delivery_method = :resend
