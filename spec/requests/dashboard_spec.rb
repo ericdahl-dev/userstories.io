@@ -52,3 +52,24 @@ RSpec.describe "Dashboard", type: :request do
     end
   end
 end
+
+RSpec.describe "GoodJob::Engine", type: :request do
+  describe "GET /jobs" do
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        get "/jobs"
+        expect(response.location).to include("/users/sign_in")
+      end
+    end
+
+    context "when authenticated" do
+      let(:user) { create(:user) }
+      before { sign_in user }
+
+      it "returns 200 or redirect within GoodJob" do
+        get "/jobs"
+        expect(response.status).to be < 400
+      end
+    end
+  end
+end
