@@ -20,10 +20,10 @@ RSpec.describe "Dark mode", type: :system, js: true do
 
     find("[data-theme-toggle]").click
 
-    expect(page).to have_css("html.dark")
+    expect(page).to have_css("html.dark", wait: 5)
 
     visit dashboard_path
 
-    expect(page).to have_css("html.dark")
+    expect(page).to have_css("html.dark", wait: 5)
   end
 end

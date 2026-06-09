@@ -18,3 +18,10 @@ RSpec.describe "Home", type: :request do
     end
   end
 end
+
+RSpec.describe "Security headers", type: :request do
+  it "sets Content-Security-Policy header" do
+    get root_path
+    expect(response.headers["Content-Security-Policy"]).to be_present
+  end
+end
