@@ -19,6 +19,7 @@ class Submission < ApplicationRecord
   scope :pending_review, -> { where(status: "pending") }
   scope :accepted,       -> { where(status: "accepted") }
   scope :shipped,        -> { where(status: "shipped") }
+  scope :visible_to_collaborator, -> { where.not(status: "dismissed") }
   scope :recent,         -> { order(created_at: :desc) }
 
   def acceptable?  = status == "pending"

@@ -39,6 +39,14 @@ RSpec.describe Submission, type: :model do
       newer = create(:submission, project: project, collaborator: collaborator, created_at: 1.minute.ago)
       expect(Submission.recent.first).to eq(newer)
     end
+
+    it "visible_to_collaborator excludes dismissed submissions" do
+      pending_sub = create(:submission, project: project, collaborator: collaborator, status: "pending")
+      dismissed_sub = create(:submission, project: project, collaborator: collaborator, status: "dismissed")
+
+      expect(Submission.visible_to_collaborator).to include(pending_sub)
+      expect(Submission.visible_to_collaborator).not_to include(dismissed_sub)
+    end
   end
 
   describe "#accept!" do
