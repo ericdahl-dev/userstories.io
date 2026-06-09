@@ -29,7 +29,7 @@ class GithubIssueCreator
       #{@submission.body}
 
       ---
-      _Submitted via [userstories.io](https://userstories.io)_
+      _Submitted via [userstories.io](https://userstories.io) by #{@submission.collaborator.name}_
     BODY
   end
 end

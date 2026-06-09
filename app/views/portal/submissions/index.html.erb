@@ -30,6 +30,11 @@
       <div class="mb-6">
         <h1 class="text-xl font-semibold text-stone-900 dark:text-stone-100">Your submissions</h1>
         <p class="mt-0.5 text-sm text-stone-500">Track the stories you've shared with the team.</p>
+        <p class="mt-1 text-xs text-stone-400 dark:text-stone-500">
+          Submitting as <strong class="text-stone-600 dark:text-stone-300"><%= current_collaborator.name %></strong>
+          — <%= link_to "change", edit_portal_profile_path(share_token: @project.share_token), class: "link-accent" %>
+          <span class="ml-1 text-stone-400">(public · appears on GitHub issues)</span>
+        </p>
       </div>
 
       <% if @submissions.any? %>

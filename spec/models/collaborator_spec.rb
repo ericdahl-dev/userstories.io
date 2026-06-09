@@ -22,6 +22,12 @@ RSpec.describe Collaborator, type: :model do
       collaborator = build(:collaborator, name: "")
       expect(collaborator).not_to be_valid
     end
+
+    it "requires unique name (case-insensitive)" do
+      create(:collaborator, name: "swift-penguin-42")
+      collaborator = build(:collaborator, name: "SWIFT-PENGUIN-42")
+      expect(collaborator).not_to be_valid
+    end
   end
 
   describe "email normalization" do
@@ -31,11 +37,23 @@ RSpec.describe Collaborator, type: :model do
     end
   end
 
+  describe ".generate_handle" do
+    it "returns adjective-noun-number format" do
+      handle = Collaborator.generate_handle
+      expect(handle).to match(/\A[a-z]+-[a-z]+-\d+\z/)
+    end
+
+    it "returns unique handles on repeated calls" do
+      handles = 10.times.map { Collaborator.generate_handle }
+      expect(handles.uniq.length).to be > 1
+    end
+  end
+
   describe ".for_login" do
-    it "creates collaborator with name from email prefix when new" do
+    it "creates collaborator with generated handle when new" do
       collaborator = Collaborator.for_login(email: "alice@example.com")
       expect(collaborator.email).to eq("alice@example.com")
-      expect(collaborator.name).to eq("alice")
+      expect(collaborator.name).to match(/\A[a-z]+-[a-z]+-\d+\z/)
       expect(collaborator).to be_persisted
     end
 
@@ -45,17 +63,17 @@ RSpec.describe Collaborator, type: :model do
     end
 
     it "returns existing collaborator without changing name" do
-      existing = create(:collaborator, email: "alice@example.com", name: "Alice Smith")
+      existing = create(:collaborator, email: "alice@example.com", name: "swift-penguin-42")
       result = Collaborator.for_login(email: "alice@example.com")
       expect(result.id).to eq(existing.id)
-      expect(result.name).to eq("Alice Smith")
+      expect(result.name).to eq("swift-penguin-42")
     end
 
-    it "sets name from email prefix if existing record has blank name" do
+    it "generates handle for existing record with blank name" do
       existing = create(:collaborator, email: "alice@example.com", name: "Alice")
       existing.update_column(:name, "")
       result = Collaborator.for_login(email: "alice@example.com")
-      expect(result.name).to eq("alice")
+      expect(result.name).to match(/\A[a-z]+-[a-z]+-\d+\z/)
     end
   end
 end

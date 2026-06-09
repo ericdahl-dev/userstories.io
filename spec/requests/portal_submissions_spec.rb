@@ -99,3 +99,41 @@ RSpec.describe "Portal::Submissions", type: :request do
     end
   end
 end
+
+RSpec.describe "Portal::Profile", type: :request do
+  let(:project) { create(:project) }
+  let(:collaborator) { create(:collaborator, name: "swift-penguin-42") }
+
+  def sign_in_collaborator(collab)
+    post portal_sessions_path(share_token: project.share_token), params: { email: collab.email }
+    token = collab.magic_tokens.valid.last
+    get verify_portal_session_path(share_token: project.share_token, token: token.token)
+  end
+
+  describe "PATCH /p/:share_token/profile" do
+    context "when authenticated" do
+      before { sign_in_collaborator(collaborator) }
+
+      it "updates display name and redirects" do
+        patch portal_profile_path(share_token: project.share_token),
+              params: { collaborator: { name: "brave-otter-77" } }
+        expect(response).to redirect_to(portal_submissions_path(share_token: project.share_token))
+        expect(collaborator.reload.name).to eq("brave-otter-77")
+      end
+
+      it "re-renders with 422 on blank name" do
+        patch portal_profile_path(share_token: project.share_token),
+              params: { collaborator: { name: "" } }
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "when unauthenticated" do
+      it "redirects to sign-in" do
+        patch portal_profile_path(share_token: project.share_token),
+              params: { collaborator: { name: "brave-otter-77" } }
+        expect(response).to redirect_to(new_portal_session_path(share_token: project.share_token))
+      end
+    end
+  end
+end
