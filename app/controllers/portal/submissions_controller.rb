@@ -4,6 +4,7 @@ class Portal::SubmissionsController < PortalController
   def index
     @submissions = current_collaborator.submissions
                                        .where(project: @project)
+                                       .visible_to_collaborator
                                        .recent
 
     sync_github_statuses(@submissions)
