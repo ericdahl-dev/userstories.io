@@ -29,6 +29,9 @@ class AddRefinementToSubmissions < ActiveRecord::Migration[8.1]
     end
 
     add_foreign_key :refinement_messages, :submissions unless foreign_key_exists?(:refinement_messages, :submissions)
-    add_index :refinement_messages, %i[submission_id created_at], unless: index_exists?(:refinement_messages, %i[submission_id created_at])
+
+    unless index_exists?(:refinement_messages, %i[submission_id created_at])
+      add_index :refinement_messages, %i[submission_id created_at]
+    end
   end
 end
