@@ -1,9 +1,6 @@
 <% content_for :title, "Refine your story - #{@project.name}" %>
-<% if @submission.refinement_processing? %>
-  <% content_for :head do %>
-    <meta http-equiv="refresh" content="5">
-  <% end %>
-<% end %>
+
+<%= turbo_stream_from @submission %>
 
 <div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
   <header class="border-b border-stone-200 bg-white px-6 py-4 dark:border-stone-800 dark:bg-stone-900">
@@ -43,71 +40,17 @@
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
             <h1 class="text-base font-semibold text-stone-900 dark:text-stone-100"><%= @submission.title %></h1>
-            <p class="mt-1 text-xs text-stone-500"><%= refinement_reply_counter(@submission) %></p>
-          </div>
-          <% if @submission.refinement_processing? %>
-            <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-200">Thinking…</span>
-          <% end %>
-        </div>
-
-        <div class="space-y-4">
-          <div class="flex justify-end">
-            <div class="max-w-[85%] rounded-2xl rounded-br-md bg-stone-900 px-4 py-3 text-sm text-white dark:bg-stone-100 dark:text-stone-900">
-              <p class="mb-1 text-xs font-medium opacity-70">Your original story</p>
-              <p class="font-medium"><%= @submission.title %></p>
-              <p class="mt-2 whitespace-pre-wrap"><%= @submission.body %></p>
+            <div id="refinement_reply_counter">
+              <%= render "portal/refinements/reply_counter", submission: @submission %>
             </div>
           </div>
-
-          <% @messages.each do |message| %>
-            <% if message.collaborator? %>
-              <div class="flex justify-end">
-                <div class="max-w-[85%] rounded-2xl rounded-br-md bg-stone-900 px-4 py-3 text-sm text-white dark:bg-stone-100 dark:text-stone-900">
-                  <p class="whitespace-pre-wrap"><%= message.body %></p>
-                </div>
-              </div>
-            <% else %>
-              <div class="flex justify-start">
-                <div class="max-w-[85%] rounded-2xl rounded-bl-md border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-                  <div class="prose-refinement"><%= render_refinement_markdown(message.body) %></div>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-
-          <% if @submission.refinement_status == "failed" && @messages.none? %>
-            <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
-              Refinement is unavailable right now. You can still submit for review with your original story.
-            </div>
-          <% end %>
         </div>
+
+        <%= render "portal/refinements/messages", messages: @messages, submission: @submission %>
       </div>
 
-      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <% composer_disabled = @submission.refinement_locked? || @submission.refinement_at_cap? || @submission.refinement_processing? %>
-        <% unless @submission.refinement_locked? %>
-          <%= form_with url: portal_submission_refine_messages_path(share_token: @project.share_token, id: @submission),
-                        scope: :refinement_message,
-                        class: "flex-1" do |f| %>
-            <%= f.text_area :body,
-                  rows: 3,
-                  disabled: composer_disabled,
-                  placeholder: composer_disabled ? "Refinement chat is closed." : "Reply to refine your story…",
-                  class: "w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-200 disabled:cursor-not-allowed disabled:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:placeholder:text-stone-500 dark:disabled:bg-stone-800" %>
-            <div class="mt-2">
-              <%= f.submit "Send",
-                    disabled: composer_disabled,
-                    class: "btn-secondary-sm disabled:cursor-not-allowed disabled:opacity-50" %>
-            </div>
-          <% end %>
-        <% end %>
-
-        <% unless @submission.refinement_locked? %>
-          <%= button_to "Submit for review",
-                portal_submission_refine_finalize_path(share_token: @project.share_token, id: @submission),
-                method: :post,
-                class: "btn-primary whitespace-nowrap" %>
-        <% end %>
+      <div id="refinement_composer">
+        <%= render "portal/refinements/composer", submission: @submission, project: @project %>
       </div>
     </div>
   </main>

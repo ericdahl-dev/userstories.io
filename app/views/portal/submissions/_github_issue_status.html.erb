@@ -1,0 +1,22 @@
+<%# locals: (submission:) %>
+<p class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-stone-500 dark:text-stone-400">
+  <% if submission.github_issue_status_pending? %>
+    <span class="inline-flex items-center gap-1.5 text-stone-400 dark:text-stone-500" role="status" aria-live="polite">
+      <span class="relative flex size-2" aria-hidden="true">
+        <span class="absolute inline-flex size-full animate-ping rounded-full bg-brand-400 opacity-60"></span>
+        <span class="relative inline-flex size-2 rounded-full bg-brand-500"></span>
+      </span>
+      Checking GitHub status…
+    </span>
+  <% elsif submission.github_issue_status_unavailable? %>
+    <span class="text-amber-700 dark:text-amber-300"><%= submission.github_issue_summary %></span>
+  <% else %>
+    <span><%= submission.github_issue_summary %></span>
+  <% end %>
+  <span aria-hidden="true">·</span>
+  <%= link_to "View issue",
+        submission.github_issue_url,
+        class: "link-accent",
+        target: "_blank",
+        rel: "noopener noreferrer" %>
+</p>

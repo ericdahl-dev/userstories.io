@@ -1,0 +1,15 @@
+<%= turbo_stream.append "refinement_messages" do %>
+  <%= render "portal/refinements/message", message: @message %>
+<% end %>
+
+<%= turbo_stream.append "refinement_messages" do %>
+  <%= render "portal/refinements/typing_indicator" %>
+<% end %>
+
+<%= turbo_stream.update "refinement_composer" do %>
+  <%= render "portal/refinements/composer", submission: @submission.reload, project: @project %>
+<% end %>
+
+<%= turbo_stream.update "refinement_reply_counter" do %>
+  <%= render "portal/refinements/reply_counter", submission: @submission.reload %>
+<% end %>

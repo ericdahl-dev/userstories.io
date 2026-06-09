@@ -6,7 +6,8 @@ class Portal::SubmissionsController < PortalController
                                        .where(project: @project)
                                        .recent
 
-    enqueue_github_status_syncs(@submissions)
+    sync_github_statuses(@submissions)
+    @refresh_github_status = @submissions.any?(&:github_status_refresh_needed?)
   end
 
   def new
@@ -17,7 +18,6 @@ class Portal::SubmissionsController < PortalController
     @submission = current_collaborator.submissions.build(submission_params.merge(project: @project))
 
     if @submission.save
-      RefineSubmissionJob.perform_later(@submission) if RefinementQuotaGuard.allowed?(@submission)
       redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission)
     else
       render :new, status: :unprocessable_entity
@@ -37,9 +37,13 @@ class Portal::SubmissionsController < PortalController
     params.require(:submission).permit(:title, :body)
   end
 
-  def enqueue_github_status_syncs(submissions)
+  def sync_github_statuses(submissions)
     submissions.select(&:github_sync_due?).each do |submission|
-      SyncSubmissionGithubStatusJob.perform_later(submission)
+      if submission.github_issue_summary.blank?
+        SubmissionGithubSync.new(submission).sync!
+      else
+        SyncSubmissionGithubStatusJob.perform_later(submission)
+      end
     end
   end
 end

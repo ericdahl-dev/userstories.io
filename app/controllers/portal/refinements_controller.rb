@@ -3,6 +3,7 @@ class Portal::RefinementsController < PortalController
   before_action :set_submission
 
   def show
+    enqueue_initial_refinement!
     @messages = @submission.refinement_messages.chronological
   end
 
@@ -32,11 +33,16 @@ class Portal::RefinementsController < PortalController
       return render :show, status: :unprocessable_entity
     end
 
-    @submission.refinement_messages.create!(role: "collaborator", body: body)
+    @message = @submission.refinement_messages.create!(role: "collaborator", body: body)
     @submission.update!(refinement_status: "processing")
     RefinementTurnJob.perform_later(@submission)
 
-    redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission)
+    respond_to do |format|
+      format.turbo_stream
+      format.html do
+        redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission)
+      end
+    end
   end
 
   def finalize
@@ -63,5 +69,13 @@ class Portal::RefinementsController < PortalController
 
   def message_params
     params.require(:refinement_message).permit(:body)
+  end
+
+  def enqueue_initial_refinement!
+    return unless @submission.refinement_initial_due?
+
+    @submission.update!(refinement_status: "processing")
+    RefineSubmissionJob.perform_later(@submission)
+    @submission.reload
   end
 end
