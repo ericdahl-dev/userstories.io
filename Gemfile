@@ -60,3 +60,5 @@ group :test do
   gem "simplecov", require: false
   gem "simplecov_json_formatter", require: false
 end
+
+gem "rack-attack", "~> 6.8"
