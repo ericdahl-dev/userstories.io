@@ -22,6 +22,7 @@ class Portal::SessionsController < PortalController
     end
 
     token.consume!
+    reset_session
     session[:collaborator_id] = token.collaborator_id
 
     redirect_to portal_submissions_path(share_token: @project.share_token)
