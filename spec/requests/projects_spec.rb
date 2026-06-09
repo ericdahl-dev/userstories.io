@@ -39,6 +39,15 @@ RSpec.describe "Projects", type: :request do
         get project_path(project)
         expect(response).to have_http_status(:ok)
       end
+
+      it "shows a copy button for the shareable portal link" do
+        get project_path(project)
+
+        expect(response.body).to include(portal_url(share_token: project.share_token))
+        expect(response.body).to include('data-controller="clipboard"')
+        expect(response.body).to include('aria-label="Copy portal link to clipboard"')
+        expect(response.body).to include("Copied!")
+      end
     end
 
     context "when authenticated as different user" do
