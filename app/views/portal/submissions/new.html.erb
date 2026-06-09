@@ -1,37 +1,36 @@
 <% content_for :title, "Submit a story - #{@project.name}" %>
 
-<div class="min-h-[100dvh] bg-gray-50 dark:bg-gray-950 flex flex-col">
-  <header class="px-6 py-4 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-    <div class="max-w-lg mx-auto flex items-center justify-between">
+<div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
+  <header class="border-b border-stone-200 bg-white px-6 py-4 dark:border-stone-800 dark:bg-stone-900">
+    <div class="mx-auto flex max-w-lg items-center justify-between">
       <div>
-        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100"><%= @project.name %></p>
+        <p class="text-sm font-semibold text-stone-900 dark:text-stone-100"><%= @project.name %></p>
         <div class="mt-0.5">
           <%= render "shared/logo",
                 href: root_path,
-                text_class: "text-xs text-gray-400 dark:text-gray-500",
+                text_class: "text-xs text-stone-500",
                 icon_class: "w-3.5 h-3.5" %>
         </div>
       </div>
       <div class="flex items-center gap-3">
         <%= render "shared/theme_toggle" %>
-        <%= link_to "My submissions", portal_submissions_path(share_token: @project.share_token),
-              class: "text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors" %>
+        <%= link_to "My submissions", portal_submissions_path(share_token: @project.share_token), class: "btn-ghost text-xs" %>
       </div>
     </div>
   </header>
 
-  <main class="flex-1 flex items-start justify-center px-6 py-10">
+  <main class="flex flex-1 items-start justify-center px-6 py-10">
     <div class="w-full max-w-lg">
       <div class="mb-6">
-        <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Submit a user story</h1>
-        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Describe what you'd like to see. Be as specific as you can.</p>
+        <h1 class="text-xl font-semibold text-stone-900 dark:text-stone-100">Submit a user story</h1>
+        <p class="mt-1 text-sm text-stone-500">Describe what you'd like to see. Be as specific as you can.</p>
       </div>
 
-      <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+      <div class="card p-6">
         <%= form_with model: @submission, url: portal_submissions_path(share_token: @project.share_token), class: "space-y-5" do |f| %>
           <% if @submission.errors.any? %>
-            <div class="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <ul class="text-sm text-red-700 dark:text-red-300 space-y-1">
+            <div class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950">
+              <ul class="space-y-1 text-sm text-red-700 dark:text-red-300">
                 <% @submission.errors.full_messages.each do |msg| %>
                   <li><%= msg %></li>
                 <% end %>
@@ -40,23 +39,22 @@
           <% end %>
 
           <div>
-            <%= f.label :title, "Title", class: "block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5" %>
+            <%= f.label :title, "Title", class: "mb-1.5 block text-xs font-medium text-stone-600 dark:text-stone-400" %>
             <%= f.text_field :title,
                   placeholder: "As a user, I want to...",
                   autofocus: true,
-                  class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+                  class: "input-field" %>
           </div>
 
           <div>
-            <%= f.label :body, "Details", class: "block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5" %>
+            <%= f.label :body, "Details", class: "mb-1.5 block text-xs font-medium text-stone-600 dark:text-stone-400" %>
             <%= f.text_area :body,
                   rows: 6,
                   placeholder: "Describe the context, the problem you're facing, and why this would help...",
-                  class: "w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none" %>
+                  class: "input-field resize-none" %>
           </div>
 
-          <%= f.submit "Submit story",
-                class: "w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 active:scale-[0.98] transition-all cursor-pointer" %>
+          <%= f.submit "Submit story", class: "btn-primary w-full cursor-pointer" %>
         <% end %>
       </div>
     </div>

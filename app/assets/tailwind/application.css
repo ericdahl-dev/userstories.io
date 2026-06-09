@@ -1,2 +1,162 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-300: #5eead4;
+  --color-brand-400: #2dd4bf;
+  --color-brand-500: #14b8a6;
+  --color-brand-600: #0d9488;
+  --color-brand-700: #0f766e;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-brand-600) 25%, transparent);
+  }
+}
+
+@layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-lg focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-sm focus:text-white focus:shadow-lg dark:focus:bg-stone-100 dark:focus:text-stone-900;
+  }
+
+  .surface-page {
+    @apply bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100;
+  }
+
+  .surface-elevated {
+    @apply bg-white dark:bg-stone-900;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm shadow-stone-900/10 transition-all duration-200 hover:bg-brand-700 hover:shadow-md hover:shadow-stone-900/15 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50 dark:focus-visible:ring-offset-stone-950;
+  }
+
+  .btn-primary-sm {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-3.5 py-2 text-xs font-medium text-white shadow-sm shadow-stone-900/10 transition-all duration-200 hover:bg-brand-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50 dark:focus-visible:ring-offset-stone-950;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-stone-200 bg-white px-4 py-2.5 text-sm font-medium text-stone-700 transition-all duration-200 hover:border-stone-300 hover:bg-stone-50 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300 dark:hover:border-stone-600 dark:hover:bg-stone-800 dark:focus-visible:ring-offset-stone-950;
+  }
+
+  .btn-github {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-stone-900 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-stone-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 focus-visible:ring-offset-2 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200 dark:focus-visible:ring-stone-100;
+  }
+
+  .btn-ghost {
+    @apply text-sm text-stone-500 transition-colors duration-200 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 dark:text-stone-400 dark:hover:text-stone-100;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 transition-colors duration-200 placeholder:text-stone-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-600 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100 dark:placeholder:text-stone-500;
+  }
+
+  .link-accent {
+    @apply font-medium text-brand-700 transition-colors duration-200 hover:text-brand-600 hover:underline dark:text-brand-400 dark:hover:text-brand-300;
+  }
+
+  .card {
+    @apply rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900;
+  }
+
+  .card-list {
+    @apply divide-y divide-stone-100 overflow-hidden rounded-xl border border-stone-200 bg-white dark:divide-stone-800 dark:border-stone-800 dark:bg-stone-900;
+  }
+
+  .panel-inset {
+    @apply rounded-lg border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-950;
+  }
+
+  .badge {
+    @apply shrink-0 rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+  }
+
+  .badge-pending {
+    @apply shrink-0 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200;
+  }
+
+  .badge-accepted {
+    @apply shrink-0 rounded-md border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-800 dark:border-sky-800 dark:bg-sky-950 dark:text-sky-200;
+  }
+
+  .badge-shipped {
+    @apply shrink-0 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200;
+  }
+
+  .badge-dismissed {
+    @apply shrink-0 rounded-md border border-stone-200 bg-stone-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-600 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-400;
+  }
+
+  .nav-link {
+    @apply rounded-md px-3 py-1.5 text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600;
+  }
+
+  .nav-link-active {
+    @apply rounded-md bg-stone-100 px-3 py-1.5 text-sm font-medium text-stone-900 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 dark:bg-stone-800 dark:text-stone-100;
+  }
+
+  .nav-link-idle {
+    @apply rounded-md px-3 py-1.5 text-sm text-stone-500 transition-colors duration-200 hover:bg-stone-50 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-stone-100;
+  }
+
+  .empty-state {
+    @apply rounded-xl border border-stone-200 bg-white px-6 py-16 text-center dark:border-stone-800 dark:bg-stone-900;
+  }
+
+  .flash-notice {
+    @apply fixed top-4 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-lg bg-stone-900 px-4 py-2.5 text-sm text-white shadow-lg shadow-stone-900/20 dark:bg-stone-100 dark:text-stone-900;
+  }
+
+  .flash-alert {
+    @apply fixed top-4 left-1/2 z-50 -translate-x-1/2 whitespace-nowrap rounded-lg bg-red-600 px-4 py-2.5 text-sm text-white shadow-lg shadow-red-900/20;
+  }
+
+  .hero-preview {
+    @apply rounded-2xl border border-stone-200 bg-stone-100/80 p-6 shadow-xl shadow-stone-900/5 backdrop-blur-sm dark:border-stone-800 dark:bg-stone-900/80 dark:shadow-black/20;
+  }
+
+  .grain-overlay {
+    @apply relative isolate;
+  }
+
+  .grain-overlay::before {
+    content: "";
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .dark .grain-overlay::before {
+    opacity: 0.05;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}

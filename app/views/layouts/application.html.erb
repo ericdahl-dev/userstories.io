@@ -3,6 +3,7 @@
   <head>
     <title><%= content_for(:title) || "userstories.io" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for(:meta_description) || "Share a link for stakeholder feedback. Triage submissions and create GitHub issues when you accept." %>">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="userstories.io">
     <meta name="mobile-web-app-capable" content="yes">
@@ -37,16 +38,14 @@
     </script>
   </head>
 
-  <body class="h-full bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased" style="font-family: 'Geist', system-ui, -apple-system, sans-serif;">
+  <body class="grain-overlay h-full surface-page antialiased">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
     <% if notice.present? %>
-      <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-700 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg whitespace-nowrap">
-        <%= notice %>
-      </div>
+      <div class="flash-notice" role="status"><%= notice %></div>
     <% end %>
     <% if alert.present? %>
-      <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white text-sm px-4 py-2.5 rounded-lg shadow-lg whitespace-nowrap">
-        <%= alert %>
-      </div>
+      <div class="flash-alert" role="alert"><%= alert %></div>
     <% end %>
 
     <%= yield %>
