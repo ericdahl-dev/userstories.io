@@ -118,6 +118,48 @@ RSpec.describe "Submissions (developer triage)", type: :request do
         expect(submission.reload.status).to eq("pending")
         expect(response).to redirect_to(project_submission_path(project, submission))
       end
+
+      it "redirects with alert when submission is no longer pending" do
+        submission.update!(status: "accepted", github_issue_number: 1, github_issue_url: "https://example.com/1")
+        post accept_project_submission_path(project, submission)
+        expect(response).to redirect_to(root_path)
+        expect(flash[:alert]).to include("not authorized")
+      end
+
+      it "calls GithubIssueCreator only once under concurrent accepts" do
+        create_count = Concurrent::AtomicFixnum.new(0)
+        allow(GithubIssueCreator).to receive(:new) do
+          creator = instance_double(GithubIssueCreator)
+          allow(creator).to receive(:create!) do
+            create_count.increment
+            sleep 0.15
+            { number: 99, url: "https://github.com/owner/repo/issues/99" }
+          end
+          creator
+        end
+
+        ready = Concurrent::CyclicBarrier.new(2)
+        responses = Queue.new
+        threads = 2.times.map do
+          Thread.new do
+            ActiveRecord::Base.connection_pool.with_connection do
+              ready.wait
+              post accept_project_submission_path(project, submission)
+              responses << response.status
+            end
+          end
+        end
+        threads.each(&:join)
+
+        expect(create_count.value).to eq(1)
+        expect(submission.reload).to have_attributes(
+          status: "accepted",
+          github_issue_number: 99,
+          github_issue_url: "https://github.com/owner/repo/issues/99"
+        )
+        statuses = 2.times.map { responses.pop }
+        expect(statuses).to all(eq(302))
+      end
     end
   end
 
