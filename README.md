@@ -245,6 +245,8 @@ Health check endpoint: `GET /up`
 
 | Doc | Contents |
 |---|---|
+| [GitHub Pages site](https://ericdahl-dev.github.io/userstories.io/) | Public dev log, features, and roadmap |
+| [`pages/README.md`](pages/README.md) | Preview locally; `script/devlog.rb update` for dev log entries |
 | [`docs/executive-summary.md`](docs/executive-summary.md) | Product vision, problem, MVP scope |
 | [`docs/user-stories.md`](docs/user-stories.md) | Feature stories with acceptance criteria |
 | [`docs/data-model.md`](docs/data-model.md) | Entity relationships and lifecycle |

@@ -1,0 +1,33 @@
+title: userstories.io
+description: Stakeholder feedback, structured and in GitHub.
+url: https://ericdahl-dev.github.io
+baseurl: /userstories.io
+lang: en
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+permalink: pretty
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      section: devlog
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+author: ericdahl-dev
+github_username: ericdahl-dev
+repository: ericdahl-dev/userstories.io

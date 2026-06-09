@@ -1,0 +1,21 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="{{ '/' | relative_url }}">
+      <img src="{{ '/assets/icon.svg' | relative_url }}" alt="" width="28" height="28" class="brand-icon">
+      <span>userstories.io</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="{{ '/' | relative_url }}"{% if page.url == '/' %} aria-current="page"{% endif %}>Home</a>
+      <a href="{{ '/features/' | relative_url }}"{% if page.url contains '/features' %} aria-current="page"{% endif %}>Features</a>
+      <a href="{{ '/devlog/' | relative_url }}"{% if page.url contains '/devlog' or page.layout == 'post' %} aria-current="page"{% endif %}>Dev log</a>
+      <a href="{{ '/roadmap/' | relative_url }}"{% if page.url contains '/roadmap' %} aria-current="page"{% endif %}>Roadmap</a>
+    </nav>
+    <div class="header-actions">
+      <button type="button" class="theme-toggle" aria-label="Toggle dark mode" data-theme-toggle>
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">☀</span>
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">☾</span>
+      </button>
+      <a class="btn btn-primary btn-sm" href="https://github.com/{{ site.github_username }}/{{ site.repository }}">GitHub</a>
+    </div>
+  </div>
+</header>

@@ -36,3 +36,8 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Jekyll (GitHub Pages site)
+/pages/_site/
+/pages/.jekyll-cache/
+/pages/.sass-cache/
+
