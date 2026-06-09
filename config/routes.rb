@@ -11,6 +11,9 @@ Rails.application.routes.draw do
     get  "/submissions", to: "portal/submissions#index", as: :portal_submissions
     post "/submissions", to: "portal/submissions#create"
     get  "/submissions/new", to: "portal/submissions#new", as: :new_portal_submission
+    get  "/submissions/:id/refine", to: "portal/refinements#show", as: :portal_submission_refine
+    post "/submissions/:id/refine/messages", to: "portal/refinements#create_message", as: :portal_submission_refine_messages
+    post "/submissions/:id/refine/finalize", to: "portal/refinements#finalize", as: :portal_submission_refine_finalize
     patch "/profile", to: "portal/profile#update", as: :portal_profile
     get   "/profile/edit", to: "portal/profile#edit", as: :edit_portal_profile
   end

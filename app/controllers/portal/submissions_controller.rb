@@ -17,8 +17,8 @@ class Portal::SubmissionsController < PortalController
     @submission = current_collaborator.submissions.build(submission_params.merge(project: @project))
 
     if @submission.save
-      redirect_to portal_submissions_path(share_token: @project.share_token),
-                  notice: "Your story has been submitted!"
+      RefineSubmissionJob.perform_later(@submission) if RefinementQuotaGuard.allowed?(@submission)
+      redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission)
     else
       render :new, status: :unprocessable_entity
     end
