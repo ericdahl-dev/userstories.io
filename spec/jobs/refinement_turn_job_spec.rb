@@ -60,6 +60,25 @@ RSpec.describe RefinementTurnJob, type: :job do
       end
     end
 
+    it "still completes when Turbo broadcast fails" do
+      create(:refinement_message, submission: submission, role: "assistant", body: "Draft")
+      create(:refinement_message, submission: submission, role: "collaborator", body: "More detail")
+      submission.update!(refinement_status: "processing")
+
+      turn = instance_double(SubmissionRefinementTurn)
+      allow(turn).to receive(:run!) do
+        create(:refinement_message, submission: submission, role: "assistant", body: "Updated draft")
+      end
+
+      allow(LlmClient).to receive(:configured?).and_return(true)
+      allow(SubmissionRefinementTurn).to receive(:new).with(submission).and_return(turn)
+      allow(broadcaster).to receive(:complete_assistant_reply!).and_raise(RuntimeError, "Connection refused")
+
+      described_class.perform_now(submission)
+
+      expect(submission.reload.refinement_status).to eq("completed")
+    end
+
     it "marks the submission failed when the turn raises" do
       create(:refinement_message, submission: submission, role: "assistant", body: "Draft")
       create(:refinement_message, submission: submission, role: "collaborator", body: "More detail")
