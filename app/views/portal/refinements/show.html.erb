@@ -2,7 +2,11 @@
 
 <%= turbo_stream_from @submission %>
 
-<div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
+<div id="main-content"
+     class="flex min-h-[100dvh] flex-col surface-page"
+     data-controller="refinement-fallback"
+     data-refinement-fallback-processing-value="<%= @submission.refinement_processing? %>"
+     data-refinement-fallback-url-value="<%= portal_submission_refine_path(share_token: @project.share_token, id: @submission) %>">
   <header class="border-b border-stone-200 bg-white px-6 py-4 dark:border-stone-800 dark:bg-stone-900">
     <div class="mx-auto flex max-w-2xl items-center justify-between gap-4">
       <div>

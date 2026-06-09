@@ -125,7 +125,16 @@ class Submission < ApplicationRecord
   end
 
   def lock_refinement!
+    return if refinement_locked?
+
     update!(refinement_locked_at: Time.current)
+  end
+
+  def refinement_assistant_summary(max_chars: 500)
+    message = refinement_messages.where(role: "assistant").order(created_at: :asc).first
+    return if message.blank?
+
+    message.body.to_s.truncate(max_chars)
   end
 
   private

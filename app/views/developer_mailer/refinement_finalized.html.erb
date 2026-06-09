@@ -1,0 +1,19 @@
+<p>Hi,</p>
+
+<p>
+  <strong><%= @collaborator.name %></strong> finished refining a story on
+  <strong><%= @project.name %></strong> and submitted it for your review.
+</p>
+
+<p><strong>Original title:</strong> <%= @submission.title %></p>
+
+<% if @submission.refined_title.present? && @submission.refined_title != @submission.title %>
+  <p><strong>Refined title:</strong> <%= @submission.refined_title %></p>
+<% end %>
+
+<% if @assistant_summary.present? %>
+  <p><strong>Assistant notes:</strong></p>
+  <pre style="white-space: pre-wrap; font-family: inherit;"><%= @assistant_summary %></pre>
+<% end %>
+
+<p><%= link_to "Review submission", @submission_url %></p>

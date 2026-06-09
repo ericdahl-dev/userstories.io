@@ -1,0 +1,16 @@
+Hi,
+
+<%= @collaborator.name %> finished refining a story on <%= @project.name %> and submitted it for your review.
+
+Original title: <%= @submission.title %>
+<% if @submission.refined_title.present? && @submission.refined_title != @submission.title -%>
+
+Refined title: <%= @submission.refined_title %>
+<% end -%>
+<% if @assistant_summary.present? -%>
+
+Assistant notes:
+<%= @assistant_summary %>
+<% end -%>
+
+Review submission: <%= @submission_url %>
