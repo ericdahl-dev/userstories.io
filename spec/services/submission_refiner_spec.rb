@@ -15,7 +15,7 @@ RSpec.describe SubmissionRefiner do
       instance_double(
         GithubClient,
         file_content: "class ApplicationController\nend",
-        directory_paths: ["app/controllers/application_controller.rb"]
+        directory_paths: [ "app/controllers/application_controller.rb" ]
       )
     )
   end

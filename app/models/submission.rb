@@ -39,7 +39,7 @@ class Submission < ApplicationRecord
   end
 
   def refinement_replies_remaining
-    [MAX_REFINEMENT_COLLABORATOR_REPLIES - refinement_collaborator_reply_count, 0].max
+    [ MAX_REFINEMENT_COLLABORATOR_REPLIES - refinement_collaborator_reply_count, 0 ].max
   end
 
   def refinement_at_cap?

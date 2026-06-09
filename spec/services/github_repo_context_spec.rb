@@ -20,7 +20,7 @@ RSpec.describe GithubRepoContext do
 
     allow(fake_client).to receive(:directory_paths)
       .with(repo: "owner/repo", path: "app/models")
-      .and_return(["app/models/submission.rb"])
+      .and_return([ "app/models/submission.rb" ])
 
     prompt = context.to_prompt
     expect(prompt).to include("app/models/submission.rb")
