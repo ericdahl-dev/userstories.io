@@ -1,0 +1,32 @@
+---
+layout: default
+---
+<article class="article">
+  <header class="article-header">
+    <p class="eyebrow">
+      <a href="{{ '/devlog/' | relative_url }}">Dev log</a>
+      <span aria-hidden="true">/</span>
+      <span>{{ page.date | date: "%b %-d, %Y" }}</span>
+    </p>
+    <h1>{{ page.title }}</h1>
+    {% if page.summary %}
+      <p class="lede">{{ page.summary }}</p>
+    {% endif %}
+    <div class="meta-row">
+      {% if page.type %}
+        <span class="badge badge-{{ page.type }}">{{ page.type }}</span>
+      {% endif %}
+      {% if page.tags %}
+        {% for tag in page.tags %}
+          <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </header>
+  <div class="prose">
+    {{ content }}
+  </div>
+  <footer class="article-footer">
+    <a class="text-link" href="{{ '/devlog/' | relative_url }}">&larr; All entries</a>
+  </footer>
+</article>
