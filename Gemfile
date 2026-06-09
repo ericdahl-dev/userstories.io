@@ -25,6 +25,9 @@ gem "good_job"
 # GitHub API
 gem "octokit"
 
+# Transactional email
+gem "resend"
+
 # Database-backed cache & cable (no Redis)
 gem "solid_cache"
 gem "solid_cable"
@@ -48,6 +51,7 @@ end
 
 group :development do
   gem "web-console"
+  gem "letter_opener"
 end
 
 group :test do
