@@ -26,7 +26,7 @@ RSpec.describe GithubIssueCreator do
       expect(fake_client).to have_received(:create_issue) do |kwargs|
         expect(kwargs[:body]).to include("I want this.")
         expect(kwargs[:body]).to include("userstories.io")
-        expect(kwargs[:body]).to include("Alice")
+        expect(kwargs[:body]).not_to include("Alice")
       end
     end
 
