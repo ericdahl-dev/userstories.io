@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   scope "/p/:share_token" do
     get  "/",        to: "portal#show",         as: :portal
     post "/sessions", to: "portal/sessions#create", as: :portal_sessions
+    delete "/sessions", to: "portal/sessions#destroy", as: :portal_session
     get  "/sessions/new", to: "portal/sessions#new", as: :new_portal_session
     get  "/sessions/verify", to: "portal/sessions#verify", as: :verify_portal_session
     get  "/submissions", to: "portal/submissions#index", as: :portal_submissions
