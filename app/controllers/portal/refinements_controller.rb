@@ -46,7 +46,9 @@ class Portal::RefinementsController < PortalController
   end
 
   def finalize
+    was_locked = @submission.refinement_locked?
     @submission.lock_refinement!
+    NotifyRefinementFinalizedJob.perform_later(@submission) unless was_locked
     redirect_to portal_submissions_path(share_token: @project.share_token),
                 notice: "Your story has been submitted for review!"
   end

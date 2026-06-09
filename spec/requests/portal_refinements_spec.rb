@@ -39,6 +39,7 @@ RSpec.describe "Portal::Refinements", type: :request do
         expect(response.body).to include('class="btn-primary w-full"')
         expect(response.body).to include("turbo-cable-stream-source")
         expect(response.body).not_to include('http-equiv="refresh"')
+        expect(response.body).to include('data-controller="refinement-fallback"')
       end
 
       it "enqueues the initial refinement and shows a typing indicator" do
@@ -121,11 +122,21 @@ RSpec.describe "Portal::Refinements", type: :request do
     end
 
     describe "POST /p/:share_token/submissions/:id/refine/finalize" do
-      it "locks refinement and redirects to submissions list" do
-        post portal_submission_refine_finalize_path(share_token: project.share_token, id: submission)
+      it "locks refinement, notifies the developer, and redirects to submissions list" do
+        expect {
+          post portal_submission_refine_finalize_path(share_token: project.share_token, id: submission)
+        }.to have_enqueued_job(NotifyRefinementFinalizedJob).with(submission)
 
         expect(submission.reload.refinement_locked_at).to be_present
         expect(response).to redirect_to(portal_submissions_path(share_token: project.share_token))
+      end
+
+      it "does not enqueue another notification when already locked" do
+        submission.update!(refinement_locked_at: Time.current)
+
+        expect {
+          post portal_submission_refine_finalize_path(share_token: project.share_token, id: submission)
+        }.not_to have_enqueued_job(NotifyRefinementFinalizedJob)
       end
     end
   end
