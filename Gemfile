@@ -61,4 +61,5 @@ group :test do
   gem "simplecov_json_formatter", require: false
 end
 
+gem "ruby-openai", "~> 8.3"
 gem "rack-attack", "~> 6.8"

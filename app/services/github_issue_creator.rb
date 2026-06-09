@@ -10,7 +10,7 @@ class GithubIssueCreator
   def create!
     result = github_client.create_issue(
       repo:  @project.github_repo,
-      title: @submission.title,
+      title: @submission.effective_title,
       body:  issue_body
     )
     result
@@ -26,7 +26,7 @@ class GithubIssueCreator
 
   def issue_body
     <<~BODY
-      #{@submission.body}
+      #{@submission.effective_body}
 
       ---
       _Submitted via [userstories.io](https://userstories.io) by #{@submission.collaborator.name}_

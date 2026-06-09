@@ -21,6 +21,22 @@ RSpec.describe GithubIssueCreator do
       expect(fake_client).to have_received(:create_issue).with(repo: "owner/repo", title: "My Story", body: anything)
     end
 
+    it "uses refined title and body when finalized" do
+      submission.update!(
+        refined_title: "Refined title",
+        refined_body: "Refined body",
+        refinement_locked_at: Time.current,
+        refinement_status: "completed"
+      )
+
+      creator.create!
+      expect(fake_client).to have_received(:create_issue).with(
+        repo: "owner/repo",
+        title: "Refined title",
+        body: anything
+      )
+    end
+
     it "includes submission body and backlink in issue body" do
       creator.create!
       expect(fake_client).to have_received(:create_issue) do |kwargs|

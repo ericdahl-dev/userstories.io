@@ -40,12 +40,17 @@ RSpec.describe "Portal::Submissions", type: :request do
     context "when authenticated" do
       before { sign_in_collaborator(collaborator) }
 
-      it "creates a submission and redirects with confirmation" do
+      it "creates a submission and redirects to refinement chat" do
+        allow(RefineSubmissionJob).to receive(:perform_later)
+
         expect {
           post portal_submissions_path(share_token: project.share_token),
                params: { submission: { title: "A story", body: "Some details" } }
         }.to change(Submission, :count).by(1)
-        expect(response).to redirect_to(portal_submissions_path(share_token: project.share_token))
+
+        submission = Submission.last
+        expect(response).to redirect_to(portal_submission_refine_path(share_token: project.share_token, id: submission))
+        expect(RefineSubmissionJob).to have_received(:perform_later).with(submission)
       end
 
       it "creates submission with pending status" do

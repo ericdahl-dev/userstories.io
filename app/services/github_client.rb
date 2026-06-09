@@ -23,4 +23,43 @@ class GithubClient
   rescue Octokit::Error => e
     raise Error, e.message
   end
+
+  def file_content(repo:, path:, max_bytes: 8.kilobytes)
+    entry = @client.contents(repo, path: path)
+    return nil if entry.is_a?(Array)
+    return nil unless entry.type == "file"
+    return nil if entry.size.to_i > max_bytes
+
+    Base64.decode64(entry.content.to_s)
+  rescue Octokit::NotFound
+    nil
+  rescue Octokit::Error => e
+    raise Error, e.message
+  end
+
+  def directory_paths(repo:, path:)
+    entries = @client.contents(repo, path: path)
+    return [] unless entries.is_a?(Array)
+
+    entries.filter_map do |entry|
+      next unless entry.type == "file"
+      next if skip_path?(entry.path, entry.size.to_i)
+
+      entry.path
+    end
+  rescue Octokit::NotFound
+    []
+  rescue Octokit::Error => e
+    raise Error, e.message
+  end
+
+  private
+
+  def skip_path?(path, size)
+    return true if size > 8.kilobytes
+    return true if path.start_with?("spec/", "vendor/", "node_modules/")
+    return true if path.match?(/\.(png|jpg|jpeg|gif|ico|pdf|woff2?|ttf|eot|zip|gz)$/i)
+
+    false
+  end
 end
