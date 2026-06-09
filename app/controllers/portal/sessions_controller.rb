@@ -10,6 +10,9 @@ class Portal::SessionsController < PortalController
 
     redirect_to portal_path(share_token: @project.share_token),
                 notice: "Check your email for a login link."
+  rescue ActiveRecord::RecordInvalid
+    flash.now[:alert] = "Please enter a valid email address."
+    render :new, status: :unprocessable_content
   end
 
   def verify

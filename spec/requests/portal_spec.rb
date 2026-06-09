@@ -44,6 +44,18 @@ RSpec.describe "Portal", type: :request do
            params: { email: "user@example.com" }
       expect(response).to redirect_to(portal_path(share_token: project.share_token))
     end
+
+    it "returns 422 with blank email" do
+      post portal_sessions_path(share_token: project.share_token),
+           params: { email: "" }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns 422 with invalid email format" do
+      post portal_sessions_path(share_token: project.share_token),
+           params: { email: "not-an-email" }
+      expect(response).to have_http_status(:unprocessable_content)
+    end
   end
 
   describe "GET /p/:share_token/sessions/verify" do
