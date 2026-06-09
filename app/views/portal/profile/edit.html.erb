@@ -1,0 +1,24 @@
+<% content_for :title, "Edit display name — #{@project.name}" %>
+
+<div id="main-content" class="flex min-h-[100dvh] flex-col items-center justify-center px-4 surface-page">
+  <div class="w-full max-w-md">
+    <div class="card p-6 shadow-sm shadow-stone-900/5">
+      <h2 class="mb-1 text-base font-semibold text-stone-900 dark:text-stone-100">Change display name</h2>
+      <p class="mb-4 text-sm text-stone-500 dark:text-stone-400">
+        This name is <strong>public</strong> — it appears on GitHub issues created from your submissions.
+      </p>
+
+      <%= form_with url: portal_profile_path(share_token: @project.share_token), method: :patch do |f| %>
+        <% if current_collaborator.errors[:name].any? %>
+          <p class="mb-3 text-sm text-red-600 dark:text-red-400"><%= current_collaborator.errors[:name].first %></p>
+        <% end %>
+        <div class="mb-4">
+          <%= f.label :name, "Display name", class: "mb-1 block text-sm font-medium text-stone-700 dark:text-stone-300" %>
+          <%= f.text_field :name, value: current_collaborator.name, class: "input-field" %>
+        </div>
+        <%= f.submit "Save", class: "btn-primary cursor-pointer" %>
+        <%= link_to "Cancel", portal_submissions_path(share_token: @project.share_token), class: "ml-3 text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300" %>
+      <% end %>
+    </div>
+  </div>
+</div>

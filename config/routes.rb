@@ -11,6 +11,8 @@ Rails.application.routes.draw do
     get  "/submissions", to: "portal/submissions#index", as: :portal_submissions
     post "/submissions", to: "portal/submissions#create"
     get  "/submissions/new", to: "portal/submissions#new", as: :new_portal_submission
+    patch "/profile", to: "portal/profile#update", as: :portal_profile
+    get   "/profile/edit", to: "portal/profile#edit", as: :edit_portal_profile
   end
 
   # Developer dashboard

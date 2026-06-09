@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe GithubIssueCreator do
   let(:user) { create(:user, github_token: "test_token") }
   let(:project) { create(:project, user: user, github_repo: "owner/repo") }
-  let(:collaborator) { create(:collaborator, name: "Alice") }
+  let(:collaborator) { create(:collaborator, name: "swift-penguin-42") }
   let(:submission) { create(:submission, project: project, collaborator: collaborator, title: "My Story", body: "I want this.") }
 
   subject(:creator) { described_class.new(submission) }
@@ -26,7 +26,7 @@ RSpec.describe GithubIssueCreator do
       expect(fake_client).to have_received(:create_issue) do |kwargs|
         expect(kwargs[:body]).to include("I want this.")
         expect(kwargs[:body]).to include("userstories.io")
-        expect(kwargs[:body]).not_to include("Alice")
+        expect(kwargs[:body]).to include("swift-penguin-42")
       end
     end
 
