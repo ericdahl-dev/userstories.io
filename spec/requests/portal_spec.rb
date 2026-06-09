@@ -61,6 +61,16 @@ RSpec.describe "Portal", type: :request do
         get verify_portal_session_path(share_token: project.share_token, token: token.token)
         expect(token.reload).to be_used
       end
+
+      it "rotates the session to prevent session fixation" do
+        get portal_path(share_token: project.share_token)
+        session_id_before = cookies["_session_id"] || response.headers["Set-Cookie"]
+
+        get verify_portal_session_path(share_token: project.share_token, token: token.token)
+        session_id_after = cookies["_session_id"] || response.headers["Set-Cookie"]
+
+        expect(session_id_after).not_to eq(session_id_before)
+      end
     end
 
     context "with expired token" do
