@@ -34,10 +34,12 @@ class SubmissionRefiner
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: user_prompt }
-      ]
+      ],
+      user: @submission.project.user
     )
 
     persist_assistant_turn!(content)
+    RefinementQuotaGuard.consume_session!(@submission)
   end
 
   def user_prompt

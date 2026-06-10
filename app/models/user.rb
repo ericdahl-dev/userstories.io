@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include BillingPlan
+
   encrypts :github_token
 
   devise :database_authenticatable, :registerable,

@@ -1,7 +1,7 @@
 class ProjectPolicy < ApplicationPolicy
   def index?   = true
   def show?    = owns?
-  def create?  = user.present?
+  def create?  = user.present? && user.can_create_project?
   def update?  = owns?
   def destroy? = owns?
   def rotate_token? = owns?

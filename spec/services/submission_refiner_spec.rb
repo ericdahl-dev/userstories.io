@@ -50,7 +50,7 @@ RSpec.describe SubmissionRefiner do
 
     it "includes repo source and prior submission in user prompt" do
       captured_messages = nil
-      allow(llm).to receive(:chat) do |messages:|
+      allow(llm).to receive(:chat) do |messages:, **|
         captured_messages = messages
         assistant_markdown
       end

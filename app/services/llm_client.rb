@@ -7,8 +7,10 @@ class LlmClient
     @client = client || build_client
   end
 
-  def chat(messages:, model: default_model)
+  def chat(messages:, model: nil, user: nil)
     raise Error, "OPENROUTER_API_KEY is not configured" if access_token.blank?
+
+    model = resolved_model(model:, user:)
 
     response = @client.chat(
       parameters: {
@@ -44,9 +46,20 @@ class LlmClient
     ENV["OPENROUTER_API_KEY"]
   end
 
-  def default_model
-    ENV.fetch("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+  def self.model_for(user)
+    user.free? ? BillingPlan::FREE_MODEL : ENV.fetch("OPENROUTER_MODEL", BillingPlan::FREE_MODEL)
   end
+
+  def default_model
+    ENV.fetch("OPENROUTER_MODEL", BillingPlan::FREE_MODEL)
+  end
+
+  def resolved_model(model:, user:)
+    model = self.class.model_for(user) if user.present?
+    model ||= default_model
+    user&.free? ? BillingPlan::FREE_MODEL : model
+  end
+  private :resolved_model
 
   def openrouter_headers
     headers = { "X-OpenRouter-Title" => "userstories.io" }

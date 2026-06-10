@@ -52,6 +52,20 @@ RSpec.describe "Portal::Refinements", type: :request do
         expect(response.body).to include("Thinking")
       end
 
+      it "skips refinement and shows a quota banner when the developer is out of sessions" do
+        project.user.update!(
+          refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+          refinement_usage_period_start: Date.current.beginning_of_month
+        )
+        allow(RefineSubmissionJob).to receive(:perform_later)
+
+        get portal_submission_refine_path(share_token: project.share_token, id: submission)
+
+        expect(RefineSubmissionJob).not_to have_received(:perform_later)
+        expect(response.body).to include("AI refinement unavailable")
+        expect(response.body).to include("project owner has reached their monthly limit")
+      end
+
       it "redirects when the submission does not belong to the collaborator" do
         other_submission = create(:submission, project: project)
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_160000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_170000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -194,7 +194,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_160000) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.text "github_token"
+    t.boolean "grandfathered_projects", default: false, null: false
+    t.string "plan", default: "free", null: false
     t.string "provider"
+    t.integer "refinement_usage_count", default: 0, null: false
+    t.date "refinement_usage_period_start"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"

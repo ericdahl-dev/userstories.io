@@ -8,6 +8,8 @@
     <p class="mt-0.5 text-sm text-stone-500">Review pending submissions from your collaborators.</p>
   </div>
 
+  <%= render "shared/plan_usage", user: current_user %>
+
   <% if @pending_submissions.any? %>
     <ul class="card-list">
       <% @pending_submissions.each do |submission| %>

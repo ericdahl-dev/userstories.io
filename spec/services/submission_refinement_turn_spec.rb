@@ -38,7 +38,7 @@ RSpec.describe SubmissionRefinementTurn do
 
   it "uses wrap-up instructions when no replies remain" do
     captured_messages = nil
-    allow(llm).to receive(:chat) do |messages:|
+    allow(llm).to receive(:chat) do |messages:, **|
       captured_messages = messages
       "## Refined story\n**Title:** Final\n**Details:** Done"
     end

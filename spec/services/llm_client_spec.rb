@@ -62,6 +62,19 @@ RSpec.describe LlmClient do
       }.to raise_error(LlmClient::Error, "empty response from OpenRouter")
     end
 
+    it "forces the free-tier model for free developers" do
+      free_user = build(:user, plan: "free")
+      ENV["OPENROUTER_MODEL"] = "anthropic/claude-3.5-sonnet"
+
+      expect(fake_client).to receive(:chat).with(
+        parameters: hash_including(model: BillingPlan::FREE_MODEL)
+      ).and_return(
+        { "choices" => [ { "message" => { "content" => "Refined story" } } ] }
+      )
+
+      client.chat(messages: [ { role: "user", content: "Hello" } ], user: free_user)
+    end
+
     it "wraps Faraday errors" do
       allow(fake_client).to receive(:chat).and_raise(Faraday::TimeoutError, "timeout")
 
