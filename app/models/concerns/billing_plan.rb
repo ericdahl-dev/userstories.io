@@ -55,4 +55,16 @@ module BillingPlan
       update!(refinement_usage_count: 0, refinement_usage_period_start: current_period)
     end
   end
+
+  def activate_pro!(stripe_customer_id: nil, stripe_subscription_id: nil)
+    update!(
+      plan: "pro",
+      stripe_customer_id: stripe_customer_id.presence || self.stripe_customer_id,
+      stripe_subscription_id: stripe_subscription_id.presence || self.stripe_subscription_id
+    )
+  end
+
+  def downgrade_to_free!
+    update!(plan: "free", stripe_subscription_id: nil)
+  end
 end

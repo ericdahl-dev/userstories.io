@@ -15,4 +15,17 @@
       Upgrade to Pro for unlimited projects and 200 refinements/month.
     </p>
   <% end %>
+
+  <% if user.free? && StripeBilling.configured? %>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <%= button_to "Upgrade — $12/mo",
+            billing_checkout_path(interval: "monthly"),
+            method: :post,
+            class: "btn-primary-sm" %>
+      <%= button_to "Upgrade — $99/yr",
+            billing_checkout_path(interval: "annual"),
+            method: :post,
+            class: "btn-secondary text-xs" %>
+    </div>
+  <% end %>
 </div>
