@@ -29,6 +29,14 @@ class ProjectsController < ApplicationController
 
   def create
     @project = current_user.projects.build(project_params)
+
+    unless current_user.can_create_project?
+      skip_authorization
+      @github_repos = fetch_github_repos
+      flash.now[:alert] = "Free plan is limited to 1 project. Upgrade to Pro for unlimited projects."
+      return render :new, status: :forbidden
+    end
+
     authorize @project
 
     if @project.save

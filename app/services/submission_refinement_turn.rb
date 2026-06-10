@@ -26,7 +26,8 @@ class SubmissionRefinementTurn
       messages: [
         { role: "system", content: system_prompt },
         { role: "user", content: user_prompt }
-      ]
+      ],
+      user: @submission.project.user
     )
 
     persist_assistant_turn!(content)

@@ -35,6 +35,12 @@
         </div>
       <% end %>
 
+      <% if @refinement_quota_blocked %>
+        <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200" role="status">
+          AI refinement unavailable — the project owner has reached their monthly limit. You can still submit your story for review.
+        </div>
+      <% end %>
+
       <% if @submission.refinement_at_cap? || @submission.refinement_locked? %>
         <div class="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
           Refinement complete — submit for review when you're ready.

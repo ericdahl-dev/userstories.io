@@ -114,6 +114,27 @@ RSpec.describe "Projects", type: :request do
         expect(response).to redirect_to(project_path(Project.last))
       end
 
+      it "blocks a free developer from creating a second project" do
+        create(:project, user: user)
+
+        expect {
+          post projects_path, params: { project: { name: "Second App", github_repo: "owner/repo-2" } }
+        }.not_to change(Project, :count)
+
+        expect(response).to have_http_status(:forbidden)
+        expect(response.body).to include("Free plan is limited to 1 project")
+      end
+
+      it "allows a pro developer to create multiple projects" do
+        pro_user = create(:user, :pro)
+        sign_in pro_user
+        create(:project, user: pro_user)
+
+        expect {
+          post projects_path, params: { project: { name: "Second App", github_repo: "owner/repo-2" } }
+        }.to change(Project, :count).by(1)
+      end
+
       it "sets share_token on the created project" do
         post projects_path, params: { project: { name: "My App", github_repo: "owner/repo" } }
         expect(Project.last.share_token).to be_present
