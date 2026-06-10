@@ -38,6 +38,10 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#index", as: :dashboard
 
+  namespace :admin do
+    root to: "dashboard#index"
+  end
+
   root to: "home#index"
 
   get "up" => "rails/health#show", as: :rails_health_check
