@@ -54,6 +54,39 @@ RSpec.describe Project, type: :model do
     end
   end
 
+  describe "#refresh_github_clone!" do
+    it "enqueues a clone job" do
+      project = create(:project)
+
+      expect {
+        project.refresh_github_clone!
+      }.to have_enqueued_job(CloneGithubRepoJob).with(project)
+    end
+  end
+
+  describe "github repo changes" do
+    it "invalidates the clone and enqueues a fresh clone" do
+      project = create(:project, github_repo: "owner/old-repo")
+      clone_service = instance_double(GithubRepoClone, invalidate!: true)
+
+      allow(GithubRepoClone).to receive(:new).with(project).and_return(clone_service)
+
+      expect {
+        project.update!(github_repo: "owner/new-repo")
+      }.to have_enqueued_job(CloneGithubRepoJob).with(project)
+
+      expect(clone_service).to have_received(:invalidate!)
+    end
+  end
+
+  describe "creation" do
+    it "enqueues a clone job" do
+      expect {
+        create(:project)
+      }.to have_enqueued_job(CloneGithubRepoJob)
+    end
+  end
+
   describe ".generate_share_token" do
     it "returns a url-safe base64 string of correct length" do
       token = Project.generate_share_token

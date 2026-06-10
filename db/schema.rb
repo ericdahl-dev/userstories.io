@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -148,6 +148,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_120001) do
 
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "github_clone_refreshed_at"
+    t.string "github_clone_status"
     t.string "github_repo"
     t.string "name"
     t.string "share_token", null: false

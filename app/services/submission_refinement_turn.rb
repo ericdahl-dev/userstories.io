@@ -58,7 +58,7 @@ class SubmissionRefinementTurn
   private
 
   def repo_context
-    GithubRepoContext.new(@submission.project).to_prompt
+    GithubRepoContext.new(@submission.project, submission: @submission).to_prompt
   end
 
   def history_context
