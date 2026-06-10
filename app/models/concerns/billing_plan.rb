@@ -25,9 +25,13 @@ module BillingPlan
     pro? ? PRO_REFINEMENTS_PER_MONTH : FREE_REFINEMENTS_PER_MONTH
   end
 
-  def refinement_quota_remaining
+  def plan_quota_remaining
     reset_refinement_usage_if_needed!
     [ refinement_quota - refinement_usage_count, 0 ].max
+  end
+
+  def refinement_quota_remaining
+    plan_quota_remaining + refinement_credit_balance
   end
 
   def refinement_quota_exhausted?
@@ -43,7 +47,12 @@ module BillingPlan
 
   def consume_refinement_session!
     reset_refinement_usage_if_needed!
-    increment!(:refinement_usage_count)
+
+    if refinement_usage_count < refinement_quota
+      increment!(:refinement_usage_count)
+    else
+      decrement!(:refinement_credit_balance)
+    end
   end
 
   def reset_refinement_usage_if_needed!

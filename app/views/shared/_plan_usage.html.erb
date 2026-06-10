@@ -6,6 +6,11 @@
   <p class="mt-1">
     AI refinements: <strong><%= user.refinement_usage_count %> / <%= user.refinement_quota %></strong> used this month
   </p>
+  <% if user.refinement_credit_balance.positive? %>
+    <p class="mt-1">
+      Bonus credits: <strong><%= user.refinement_credit_balance %></strong>
+    </p>
+  <% end %>
   <% if user.refinement_quota_exhausted? %>
     <p class="mt-2 text-amber-800 dark:text-amber-200">
       Monthly refinement quota reached. Upgrade to Pro for 200 refinements/month.

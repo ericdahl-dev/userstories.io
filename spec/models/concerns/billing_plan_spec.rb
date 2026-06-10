@@ -37,16 +37,61 @@ RSpec.describe BillingPlan do
     it "resets the counter when the billing period rolls over" do
       user.update!(
         refinement_usage_count: 8,
-        refinement_usage_period_start: 1.month.ago.beginning_of_month.to_date
+        refinement_usage_period_start: 1.month.ago.beginning_of_month.to_date,
+        refinement_credit_balance: 5
       )
 
       travel_to Date.current.beginning_of_month + 2.days do
         user.reset_refinement_usage_if_needed!
         expect(user.reload).to have_attributes(
           refinement_usage_count: 0,
-          refinement_usage_period_start: Date.current.beginning_of_month
+          refinement_usage_period_start: Date.current.beginning_of_month,
+          refinement_credit_balance: 5
         )
       end
+    end
+  end
+
+  describe "refinement credits" do
+    it "includes bonus credits in remaining allowance" do
+      user.update!(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+        refinement_usage_period_start: Date.current.beginning_of_month,
+        refinement_credit_balance: 3
+      )
+
+      expect(user.refinement_quota_remaining).to eq(3)
+      expect(user.refinement_quota_exhausted?).to be(false)
+    end
+
+    it "consumes plan quota before bonus credits" do
+      user.update!(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH - 1,
+        refinement_usage_period_start: Date.current.beginning_of_month,
+        refinement_credit_balance: 2
+      )
+
+      user.consume_refinement_session!
+
+      expect(user.reload).to have_attributes(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+        refinement_credit_balance: 2
+      )
+    end
+
+    it "consumes bonus credits when plan quota is exhausted" do
+      user.update!(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+        refinement_usage_period_start: Date.current.beginning_of_month,
+        refinement_credit_balance: 2
+      )
+
+      user.consume_refinement_session!
+
+      expect(user.reload).to have_attributes(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+        refinement_credit_balance: 1
+      )
     end
   end
 end

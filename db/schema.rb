@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_180001) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_10_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "admin_credit_grants", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.bigint "granted_by_id", null: false
+    t.text "reason"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["created_at"], name: "index_admin_credit_grants_on_created_at"
+    t.index ["granted_by_id"], name: "index_admin_credit_grants_on_granted_by_id"
+    t.index ["user_id"], name: "index_admin_credit_grants_on_user_id"
+  end
 
   create_table "collaborators", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -206,6 +218,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_180001) do
     t.boolean "grandfathered_projects", default: false, null: false
     t.string "plan", default: "free", null: false
     t.string "provider"
+    t.integer "refinement_credit_balance", default: 0, null: false
     t.integer "refinement_usage_count", default: 0, null: false
     t.date "refinement_usage_period_start"
     t.datetime "remember_created_at"
@@ -222,6 +235,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_180001) do
     t.index ["stripe_subscription_id"], name: "index_users_on_stripe_subscription_id", unique: true
   end
 
+  add_foreign_key "admin_credit_grants", "users"
+  add_foreign_key "admin_credit_grants", "users", column: "granted_by_id"
   add_foreign_key "magic_tokens", "collaborators"
   add_foreign_key "projects", "users"
   add_foreign_key "refinement_messages", "submissions"

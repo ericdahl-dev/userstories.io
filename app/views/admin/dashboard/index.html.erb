@@ -10,6 +10,7 @@
     </div>
 
     <div class="flex flex-wrap gap-2">
+      <%= link_to "Developer credits", admin_developers_path, class: "btn-secondary text-xs" %>
       <% AdminDashboardMetrics::WINDOWS.each do |window| %>
         <%= link_to window_label(window), admin_root_path(window: window),
               class: @metrics.window == window ? "btn-primary text-xs" : "btn-secondary text-xs" %>

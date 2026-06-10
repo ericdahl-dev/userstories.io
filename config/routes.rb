@@ -46,6 +46,11 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root to: "dashboard#index"
+    resources :developers, only: %i[index show] do
+      member do
+        post :grant_credits
+      end
+    end
   end
 
   root to: "home#index"

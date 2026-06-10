@@ -8,6 +8,8 @@ class User < ApplicationRecord
          :omniauthable, omniauth_providers: [ :github ]
 
   has_many :projects, dependent: :destroy
+  has_many :admin_credit_grants, dependent: :destroy
+  has_many :granted_admin_credit_grants, class_name: "AdminCreditGrant", foreign_key: :granted_by_id, dependent: :destroy, inverse_of: :granted_by
 
   def admin?
     AdminAllowlist.include?(email)
