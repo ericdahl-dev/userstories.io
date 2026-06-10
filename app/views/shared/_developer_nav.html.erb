@@ -7,6 +7,10 @@
               class: request.path == dashboard_path ? "nav-link-active" : "nav-link-idle" %>
         <%= link_to "Projects", projects_path,
               class: request.path.start_with?(projects_path) ? "nav-link-active" : "nav-link-idle" %>
+        <% if current_user.admin? %>
+          <%= link_to "Ops", admin_root_path,
+                class: request.path.start_with?("/admin") ? "nav-link-active" : "nav-link-idle" %>
+        <% end %>
       </nav>
     </div>
     <div class="flex items-center gap-3">

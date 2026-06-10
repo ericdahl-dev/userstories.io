@@ -1,0 +1,145 @@
+<% content_for :title, "Ops dashboard" %>
+
+<%= render "shared/developer_nav" %>
+
+<main id="main-content" class="mx-auto max-w-6xl px-6 py-10">
+  <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-xl font-semibold text-stone-900 dark:text-stone-100">Ops dashboard</h1>
+      <p class="mt-0.5 text-sm text-stone-500">First-party workflow health from Postgres — no third-party analytics.</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <% AdminDashboardMetrics::WINDOWS.each do |window| %>
+        <%= link_to window_label(window), admin_root_path(window: window),
+              class: @metrics.window == window ? "btn-primary text-xs" : "btn-secondary text-xs" %>
+      <% end %>
+    </div>
+  </div>
+
+  <section class="mb-8 grid gap-4 sm:grid-cols-3">
+    <% { users: "Developers", projects: "Projects", collaborators: "Collaborators" }.each do |key, label| %>
+      <div class="card p-5">
+        <p class="text-xs font-medium uppercase tracking-wide text-stone-500"><%= label %></p>
+        <p class="mt-2 text-2xl font-semibold text-stone-900 dark:text-stone-100"><%= @metrics.platform_totals[key] %></p>
+        <p class="mt-1 text-xs text-stone-500">All time</p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="mb-8 grid gap-4 lg:grid-cols-2">
+    <div class="card p-5">
+      <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Submissions by status</h2>
+      <p class="mt-1 text-xs text-stone-500">Window: <%= window_label(@metrics.window) %></p>
+
+      <dl class="mt-4 space-y-3">
+        <% @metrics.submission_counts.each do |status, count| %>
+          <div class="flex items-center justify-between gap-4 text-sm">
+            <dt class="capitalize text-stone-600 dark:text-stone-400"><%= status %></dt>
+            <dd class="font-medium text-stone-900 dark:text-stone-100"><%= count %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Workflow health</h2>
+      <p class="mt-1 text-xs text-stone-500">Window: <%= window_label(@metrics.window) %></p>
+
+      <div class="mt-4">
+        <p class="text-3xl font-semibold text-stone-900 dark:text-stone-100">
+          <% if @metrics.acceptance_rate %>
+            <%= @metrics.acceptance_rate %>%
+          <% else %>
+            —
+          <% end %>
+        </p>
+        <p class="mt-2 text-sm text-stone-600 dark:text-stone-400">Acceptance rate</p>
+        <p class="mt-1 text-xs text-stone-500"><%= @metrics.acceptance_rate_formula %></p>
+      </div>
+
+      <dl class="mt-6 space-y-3 border-t border-stone-100 pt-4 dark:border-stone-800">
+        <div class="flex items-center justify-between gap-4 text-sm">
+          <dt class="text-stone-600 dark:text-stone-400">Magic links sent</dt>
+          <dd class="font-medium text-stone-900 dark:text-stone-100"><%= @metrics.magic_link_stats[:sent] %></dd>
+        </div>
+        <div class="flex items-center justify-between gap-4 text-sm">
+          <dt class="text-stone-600 dark:text-stone-400">Magic link sign-ins</dt>
+          <dd class="font-medium text-stone-900 dark:text-stone-100"><%= @metrics.magic_link_stats[:sign_ins] %></dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="mb-8 grid gap-4 lg:grid-cols-2">
+    <div class="card p-5">
+      <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Recent submissions</h2>
+      <p class="mt-1 text-xs text-stone-500">Latest <%= AdminDashboardMetrics::RECENT_SUBMISSIONS_LIMIT %> in window</p>
+
+      <% if @metrics.recent_submissions.any? %>
+        <ul class="mt-4 divide-y divide-stone-100 dark:divide-stone-800">
+          <% @metrics.recent_submissions.each do |submission| %>
+            <li class="py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100"><%= submission.title %></p>
+                  <p class="mt-1 text-xs text-stone-500">
+                    <%= submission.project.name %>
+                    &middot; <%= submission.collaborator.name %>
+                    &middot; <%= submission.created_at.strftime("%b %-d") %>
+                  </p>
+                </div>
+                <%= render "shared/status_badge", status: submission.status %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-4 text-sm text-stone-500">No submissions in this window.</p>
+      <% end %>
+    </div>
+
+    <div class="card p-5">
+      <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Stale pending submissions</h2>
+      <p class="mt-1 text-xs text-stone-500">Pending longer than <%= AdminDashboardMetrics::STALE_PENDING_DAYS %> days</p>
+
+      <% if @metrics.stale_pending_submissions.any? %>
+        <ul class="mt-4 divide-y divide-stone-100 dark:divide-stone-800">
+          <% @metrics.stale_pending_submissions.each do |submission| %>
+            <li class="py-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-stone-900 dark:text-stone-100"><%= submission.title %></p>
+                  <p class="mt-1 text-xs text-stone-500">
+                    <%= submission.project.name %>
+                    &middot; pending since <%= submission.created_at.strftime("%b %-d") %>
+                  </p>
+                </div>
+                <%= render "shared/status_badge", status: submission.status %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="mt-4 text-sm text-stone-500">No stale pending submissions.</p>
+      <% end %>
+    </div>
+  </section>
+
+  <% if @metrics.recent_job_failures.any? %>
+    <section class="card p-5">
+      <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Recent background job failures</h2>
+      <p class="mt-1 text-xs text-stone-500">From Good Job — includes refinement and GitHub sync errors</p>
+
+      <ul class="mt-4 divide-y divide-stone-100 dark:divide-stone-800">
+        <% @metrics.recent_job_failures.each do |job| %>
+          <li class="py-3">
+            <p class="text-sm font-medium text-stone-900 dark:text-stone-100"><%= job.job_class %></p>
+            <p class="mt-1 truncate text-xs text-stone-500"><%= job.error %></p>
+            <p class="mt-1 text-xs text-stone-400"><%= job.created_at.strftime("%b %-d, %Y %H:%M") %></p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+</main>
