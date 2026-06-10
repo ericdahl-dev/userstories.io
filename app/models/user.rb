@@ -17,7 +17,9 @@ class User < ApplicationRecord
       user.password = Devise.friendly_token[0, 20]
       user.github_token = auth.credentials.token
     end.tap do |user|
-      user.update!(github_token: auth.credentials.token)
+      attrs = { github_token: auth.credentials.token }
+      attrs[:email] = auth.info.email if auth.info.email.present?
+      user.update!(attrs)
     end
   end
 end
