@@ -23,6 +23,16 @@ RSpec.describe RefinementQuotaGuard do
       expect(described_class.allowed?(submission)).to be(false)
     end
 
+    it "allows refinement when plan quota is exhausted but bonus credits remain" do
+      developer.update!(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+        refinement_usage_period_start: Date.current.beginning_of_month,
+        refinement_credit_balance: 2
+      )
+
+      expect(described_class.allowed?(submission)).to be(true)
+    end
+
     it "allows follow-up turns during an active session even when quota is exhausted" do
       developer.update!(
         refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
@@ -53,6 +63,19 @@ RSpec.describe RefinementQuotaGuard do
       expect {
         described_class.consume_session!(submission)
       }.to change { developer.reload.refinement_usage_count }.by(1)
+    end
+
+    it "consumes bonus credits when plan quota is already exhausted" do
+      developer.update!(
+        refinement_usage_count: BillingPlan::FREE_REFINEMENTS_PER_MONTH,
+        refinement_usage_period_start: Date.current.beginning_of_month,
+        refinement_credit_balance: 2
+      )
+      create(:refinement_message, submission: submission, role: "assistant", body: "Initial")
+
+      expect {
+        described_class.consume_session!(submission)
+      }.to change { developer.reload.refinement_credit_balance }.by(-1)
     end
 
     it "does not increment for follow-up assistant messages" do

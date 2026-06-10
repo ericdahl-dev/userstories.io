@@ -6,4 +6,8 @@ class AdminPolicy < ApplicationPolicy
   def index?
     access?
   end
+
+  def grant_credits?
+    access?
+  end
 end
