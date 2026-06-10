@@ -38,6 +38,12 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#index", as: :dashboard
 
+  get "/billing/success", to: "billing#success", as: :billing_success
+  get "/billing/cancel", to: "billing#cancel", as: :billing_cancel
+  post "/billing/checkout", to: "billing#checkout", as: :billing_checkout
+
+  post "/stripe/webhooks", to: "stripe_webhooks#create"
+
   namespace :admin do
     root to: "dashboard#index"
   end

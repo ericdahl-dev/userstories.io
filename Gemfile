@@ -66,3 +66,5 @@ gem "ruby-openai", "~> 8.3"
 gem "rack-attack", "~> 6.8"
 
 gem "kaminari", "~> 1.2"
+
+gem "stripe", "~> 19.2"
