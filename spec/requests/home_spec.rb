@@ -16,6 +16,16 @@ RSpec.describe "Home", type: :request do
       get root_path
       expect(response.body).to include("GitHub")
     end
+
+    it "renders Open Graph and Twitter card metadata" do
+      get root_path
+
+      expect(response.body).to include('<meta property="og:title" content="userstories.io - Stakeholder feedback, structured and in GitHub">')
+      expect(response.body).to include('<meta property="og:description" content="Collect user stories from collaborators via a shareable link. Triage in your inbox and open GitHub issues when you accept.">')
+      expect(response.body).to include('<meta property="og:image" content="http://www.example.com/social-card.png">')
+      expect(response.body).to include('<meta property="og:url" content="http://www.example.com/">')
+      expect(response.body).to include('<meta name="twitter:card" content="summary_large_image">')
+    end
   end
 end
 
