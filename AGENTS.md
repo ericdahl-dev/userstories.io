@@ -46,8 +46,9 @@ bin/rails db:prepare
 bundle exec rspec
 ```
 
-Do NOT set `DATABASE_URL` in your local `.env` — dev/test use local socket.
-`DATABASE_URL` is only set in production and CI.
+PostgreSQL must include **pgvector** (submission embeddings). For local dev/test, run
+`docker compose up -d postgres` and set `DATABASE_URL` in `.env` — see `.env.example`.
+Production and CI also set `DATABASE_URL` explicitly.
 
 ## Key Decisions
 

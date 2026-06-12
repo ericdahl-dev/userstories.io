@@ -47,6 +47,10 @@
         </div>
       <% end %>
 
+      <% if @similar_stories.present? %>
+        <%= render "portal/refinements/similar_stories", stories: @similar_stories %>
+      <% end %>
+
       <div class="card p-5">
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>

@@ -4,10 +4,12 @@ class SubmissionRefinementTurn
   BASE_SYSTEM_PROMPT = <<~PROMPT.freeze
     You help collaborators refine user stories for a software project before developer triage.
     Ground every refinement in the supplied repository source files and project submission history.
-    Cite similar stories by title and status — never invent submission IDs.
+    When pre-detected similar submissions are provided, cite them by title and status in
+    ## Similar stories on this project — never invent submission IDs or omit high-score matches.
     Say a feature is already implemented only with evidence from shipped stories, closed GitHub issues, or code references.
     Be helpful and concise. This is a short refinement pass, not an open-ended workshop.
     Update the refined story when appropriate and keep the same markdown section structure when you revise it.
+    Include ## Similar stories on this project with submitter label and relationship when matches exist.
   PROMPT
 
   WRAP_UP_PROMPT = <<~PROMPT.freeze
@@ -50,6 +52,9 @@ class SubmissionRefinementTurn
       Project submission history:
       #{history_context}
 
+      Pre-detected similar submissions on this project:
+      #{similar_context}
+
       Conversation so far:
       #{conversation_thread}
     PROMPT
@@ -63,6 +68,10 @@ class SubmissionRefinementTurn
 
   def history_context
     SubmissionHistoryContext.new(@submission).to_prompt
+  end
+
+  def similar_context
+    SubmissionHistoryContext.new(@submission).to_similar_prompt
   end
 
   def conversation_thread
