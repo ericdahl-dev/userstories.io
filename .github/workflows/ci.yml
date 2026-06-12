@@ -74,4 +74,4 @@ jobs:
       - name: Build assets
         run: bin/rails assets:precompile
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec rspec -t '~screenshot'

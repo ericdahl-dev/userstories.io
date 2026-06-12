@@ -35,6 +35,8 @@ RSpec.configure do |config|
   end
 
   config.after type: :system do
+    Capybara.reset_sessions!
+    Capybara.current_session.driver&.reset!
     Warden.test_reset!
   end
 end
