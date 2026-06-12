@@ -29,7 +29,7 @@ RSpec.describe "Home", type: :request do
 
     it "populates Open Graph content with page-specific values" do
       get root_path
-      expect(response.body).to include("userstories.io - Stakeholder feedback")
+      expect(response.body).to include("userstories.io - Stakeholder feedback, structured and in GitHub")
       expect(response.body).to include("Collect user stories from collaborators")
       expect(response.body).to match(/property="og:image" content="https?:\/\/.*apple-touch-icon\.png"/)
     end
