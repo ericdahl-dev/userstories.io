@@ -108,15 +108,18 @@ _(add environment-specific gotchas here as they are discovered)_
 
 ## Secrets Management
 
-Secrets are stored in **Doppler** (project: `userstories`, config: `prd`) and synced
-to Coolify env vars via:
+Secrets are stored in **Doppler** (project: `userstories`) and synced to Coolify env
+vars via:
 
 ```bash
 ./script/sync_doppler_to_coolify.sh
 ```
 
+- `prd` → production deploys
+- `stg` → PR preview deploys (`is_preview=true` in Coolify)
+
 To rotate or update a secret:
-1. Update the value in Doppler (`doppler secrets set --project userstories --config prd KEY value`)
+1. Update the value in Doppler (`doppler secrets set --project userstories --config prd|stg KEY value`)
 2. Run the sync script to push to Coolify and restart the app
 
 Do **not** edit env vars directly in the Coolify dashboard — they will be overwritten

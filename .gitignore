@@ -41,3 +41,4 @@
 /pages/.jekyll-cache/
 /pages/.sass-cache/
 
+.env

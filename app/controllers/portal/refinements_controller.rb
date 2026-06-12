@@ -34,6 +34,15 @@ class Portal::RefinementsController < PortalController
     end
 
     @message = @submission.refinement_messages.create!(role: "collaborator", body: body)
+    PostHog.capture(
+      distinct_id: current_collaborator.email,
+      event: "refinement_message_sent",
+      properties: {
+        project_id: @project.id,
+        submission_id: @submission.id,
+        replies_remaining: @submission.refinement_replies_remaining - 1
+      }
+    )
     @submission.update!(refinement_status: "processing")
     RefinementTurnJob.perform_later(@submission)
 
@@ -47,6 +56,11 @@ class Portal::RefinementsController < PortalController
 
   def finalize
     @submission.lock_refinement!
+    PostHog.capture(
+      distinct_id: current_collaborator.email,
+      event: "refinement_finalized",
+      properties: { project_id: @project.id, submission_id: @submission.id }
+    )
     redirect_to portal_submissions_path(share_token: @project.share_token),
                 notice: "Your story has been submitted for review!"
   end
