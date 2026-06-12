@@ -23,13 +23,20 @@ RSpec.describe "Home", type: :request do
       expect(response.body).to include('property="og:description"')
       expect(response.body).to include('property="og:image"')
       expect(response.body).to include('property="og:url"')
-      expect(response.body).to include('property="og:type"')
-      expect(response.body).to include('property="og:site_name"')
+      expect(response.body).to include('property="og:type" content="website"')
+      expect(response.body).to include('property="og:site_name" content="userstories.io"')
+    end
+
+    it "populates Open Graph content with page-specific values" do
+      get root_path
+      expect(response.body).to include("userstories.io - Stakeholder feedback")
+      expect(response.body).to include("Collect user stories from collaborators")
+      expect(response.body).to match(/property="og:image" content="https?:\/\/.*apple-touch-icon\.png"/)
     end
 
     it "includes Twitter Card meta tags" do
       get root_path
-      expect(response.body).to include('name="twitter:card"')
+      expect(response.body).to include('name="twitter:card" content="summary"')
       expect(response.body).to include('name="twitter:title"')
       expect(response.body).to include('name="twitter:description"')
       expect(response.body).to include('name="twitter:image"')
