@@ -16,6 +16,29 @@ RSpec.describe "Home", type: :request do
       get root_path
       expect(response.body).to include("GitHub")
     end
+
+    it "includes Open Graph meta tags" do
+      get root_path
+      expect(response.body).to include('property="og:title"')
+      expect(response.body).to include('property="og:description"')
+      expect(response.body).to include('property="og:image"')
+      expect(response.body).to include('property="og:url"')
+      expect(response.body).to include('property="og:type"')
+      expect(response.body).to include('property="og:site_name"')
+    end
+
+    it "includes Twitter Card meta tags" do
+      get root_path
+      expect(response.body).to include('name="twitter:card"')
+      expect(response.body).to include('name="twitter:title"')
+      expect(response.body).to include('name="twitter:description"')
+      expect(response.body).to include('name="twitter:image"')
+    end
+
+    it "uses an absolute URL for the OG image" do
+      get root_path
+      expect(response.body).to match(/property="og:image" content="https?:\/\//)
+    end
   end
 end
 

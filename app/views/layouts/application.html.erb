@@ -7,6 +7,19 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="userstories.io">
     <meta name="mobile-web-app-capable" content="yes">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="userstories.io">
+    <meta property="og:title" content="<%= content_for(:og_title) || content_for(:title) || "userstories.io" %>">
+    <meta property="og:description" content="<%= content_for(:og_description) || content_for(:meta_description) || "Share a link for stakeholder feedback. Triage submissions and create GitHub issues when you accept." %>">
+    <meta property="og:url" content="<%= content_for(:og_url) || request.url %>">
+    <meta property="og:image" content="<%= content_for(:og_image) || root_url.chomp("/") + "/apple-touch-icon.png" %>">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<%= content_for(:og_title) || content_for(:title) || "userstories.io" %>">
+    <meta name="twitter:description" content="<%= content_for(:og_description) || content_for(:meta_description) || "Share a link for stakeholder feedback. Triage submissions and create GitHub issues when you accept." %>">
+    <meta name="twitter:image" content="<%= content_for(:og_image) || root_url.chomp("/") + "/apple-touch-icon.png" %>">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
