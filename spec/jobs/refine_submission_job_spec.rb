@@ -58,5 +58,22 @@ RSpec.describe RefineSubmissionJob, type: :job do
 
       expect(submission.reload.refinement_status).to eq("failed")
     end
+
+    it "captures the exception in PostHog when refinement raises" do
+      refiner = instance_double(SubmissionRefiner)
+      allow(refiner).to receive(:refine!).and_raise(LlmClient::Error, "timeout")
+      allow(LlmClient).to receive(:configured?).and_return(true)
+      allow(SubmissionRefiner).to receive(:new).with(submission).and_return(refiner)
+      broadcaster = instance_double(RefinementChatBroadcaster, processing_failed!: true)
+      allow(RefinementChatBroadcaster).to receive(:new).and_return(broadcaster)
+
+      expect(PostHog).to receive(:capture_exception).with(
+        instance_of(LlmClient::Error),
+        submission.collaborator.email,
+        hash_including(submission_id: submission.id)
+      )
+
+      described_class.perform_now(submission)
+    end
   end
 end

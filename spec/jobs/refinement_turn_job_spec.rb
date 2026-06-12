@@ -94,5 +94,24 @@ RSpec.describe RefinementTurnJob, type: :job do
       expect(submission.reload.refinement_status).to eq("failed")
       expect(broadcaster).to have_received(:processing_failed!)
     end
+
+    it "captures the exception in PostHog when the turn raises" do
+      create(:refinement_message, submission: submission, role: "assistant", body: "Draft")
+      create(:refinement_message, submission: submission, role: "collaborator", body: "More detail")
+      submission.update!(refinement_status: "processing")
+
+      turn = instance_double(SubmissionRefinementTurn)
+      allow(turn).to receive(:run!).and_raise(SubmissionRefinementTurn::Error, "bad response")
+      allow(LlmClient).to receive(:configured?).and_return(true)
+      allow(SubmissionRefinementTurn).to receive(:new).with(submission).and_return(turn)
+
+      expect(PostHog).to receive(:capture_exception).with(
+        instance_of(SubmissionRefinementTurn::Error),
+        submission.collaborator.email,
+        hash_including(submission_id: submission.id)
+      )
+
+      described_class.perform_now(submission)
+    end
   end
 end
