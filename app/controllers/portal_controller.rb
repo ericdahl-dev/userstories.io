@@ -7,6 +7,12 @@ class PortalController < ApplicationController
   before_action :find_project
 
   def show
+    distinct_id = current_collaborator&.email || "anon_#{@project.share_token}"
+    PostHog.capture(
+      distinct_id: distinct_id,
+      event: "portal_viewed",
+      properties: { project_id: @project.id }
+    )
   end
 
   private

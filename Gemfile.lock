@@ -318,6 +318,11 @@ GEM
     pg (1.6.3-x86_64-darwin)
     pg (1.6.3-x86_64-linux)
     pg (1.6.3-x86_64-linux-musl)
+    posthog-rails (3.11.0)
+      posthog-ruby (~> 3.11)
+      railties (>= 5.2.0)
+    posthog-ruby (3.11.0)
+      concurrent-ruby (~> 1)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -553,6 +558,8 @@ DEPENDENCIES
   omniauth-github
   omniauth-rails_csrf_protection
   pg (~> 1.1)
+  posthog-rails
+  posthog-ruby
   propshaft
   puma (>= 5.0)
   pundit

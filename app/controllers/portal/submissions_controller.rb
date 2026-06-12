@@ -19,6 +19,11 @@ class Portal::SubmissionsController < PortalController
     @submission = current_collaborator.submissions.build(submission_params.merge(project: @project))
 
     if @submission.save
+      PostHog.capture(
+        distinct_id: current_collaborator.email,
+        event: "submission_created",
+        properties: { project_id: @project.id, submission_id: @submission.id }
+      )
       redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission),
                   notice: "Story received — let's refine it before review."
     else

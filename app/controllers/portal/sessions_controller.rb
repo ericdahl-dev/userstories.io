@@ -24,10 +24,21 @@ class Portal::SessionsController < PortalController
       return
     end
 
+    collaborator = token.collaborator
     token.consume!
     reset_session
     session[:collaborator_id] = token.collaborator_id
     session[:collaborator_authenticated_at] = Time.current.iso8601
+
+    PostHog.identify(
+      distinct_id: collaborator.email,
+      properties: { name: collaborator.name, email: collaborator.email }
+    )
+    PostHog.capture(
+      distinct_id: collaborator.email,
+      event: "collaborator_signed_in",
+      properties: { project_id: @project.id }
+    )
 
     redirect_to portal_submissions_path(share_token: @project.share_token)
   end

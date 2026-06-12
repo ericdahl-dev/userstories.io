@@ -26,12 +26,22 @@ class SubmissionsController < ApplicationController
       )
     end
 
+    PostHog.capture(
+      distinct_id: current_user.posthog_distinct_id,
+      event: "submission_accepted",
+      properties: {
+        project_id: @project.id,
+        submission_id: @submission.id,
+        github_issue_number: @submission.github_issue_number
+      }
+    )
     redirect_to project_submission_path(@project, @submission),
                 notice: "Submission accepted and GitHub issue created."
   rescue Submission::InvalidTransition
     redirect_to project_submission_path(@project, @submission),
                 alert: "This submission has already been accepted or is no longer pending."
   rescue GithubIssueCreator::Error => e
+    PostHog.capture_exception(e, current_user.posthog_distinct_id)
     redirect_to project_submission_path(@project, @submission),
                 alert: "GitHub issue creation failed: #{e.message}"
   end
@@ -39,12 +49,22 @@ class SubmissionsController < ApplicationController
   def dismiss
     authorize @submission
     @submission.dismiss!
+    PostHog.capture(
+      distinct_id: current_user.posthog_distinct_id,
+      event: "submission_dismissed",
+      properties: { project_id: @project.id, submission_id: @submission.id }
+    )
     redirect_to project_submissions_path(@project), notice: "Submission dismissed."
   end
 
   def ship
     authorize @submission
     @submission.ship!
+    PostHog.capture(
+      distinct_id: current_user.posthog_distinct_id,
+      event: "submission_shipped",
+      properties: { project_id: @project.id, submission_id: @submission.id }
+    )
     redirect_to project_submission_path(@project, @submission), notice: "Marked as shipped."
   end
 

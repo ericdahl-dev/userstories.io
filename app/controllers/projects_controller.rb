@@ -40,6 +40,11 @@ class ProjectsController < ApplicationController
     authorize @project
 
     if @project.save
+      PostHog.capture(
+        distinct_id: current_user.posthog_distinct_id,
+        event: "project_created",
+        properties: { project_id: @project.id, github_repo: @project.github_repo }
+      )
       redirect_to @project, notice: "Project created."
     else
       @github_repos = fetch_github_repos
@@ -65,6 +70,11 @@ class ProjectsController < ApplicationController
 
   def destroy
     authorize @project
+    PostHog.capture(
+      distinct_id: current_user.posthog_distinct_id,
+      event: "project_deleted",
+      properties: { project_id: @project.id, github_repo: @project.github_repo }
+    )
     @project.destroy
     redirect_to projects_path, notice: "Project deleted."
   end
@@ -72,6 +82,11 @@ class ProjectsController < ApplicationController
   def rotate_token
     authorize @project
     @project.rotate_share_token!
+    PostHog.capture(
+      distinct_id: current_user.posthog_distinct_id,
+      event: "project_share_token_rotated",
+      properties: { project_id: @project.id }
+    )
     redirect_to @project, notice: "Shareable link has been rotated."
   end
 

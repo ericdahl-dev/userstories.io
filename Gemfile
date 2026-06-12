@@ -66,6 +66,10 @@ end
 gem "ruby-openai", "~> 8.3"
 gem "rack-attack", "~> 6.8"
 
+# PostHog analytics and error tracking
+gem "posthog-ruby"
+gem "posthog-rails"
+
 gem "kaminari", "~> 1.2"
 
 gem "stripe", "~> 19.2"
