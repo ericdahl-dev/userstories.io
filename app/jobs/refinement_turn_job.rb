@@ -16,7 +16,7 @@ class RefinementTurnJob < ApplicationJob
     message = submission.refinement_messages.where(role: "assistant").order(created_at: :desc).first
     broadcast_assistant_reply!(submission, message) if message
   rescue LlmClient::Error, SubmissionRefinementTurn::Error => e
-    mark_failed!(submission, e.message)
+    mark_failed!(submission, e)
   end
 
   private
@@ -27,8 +27,16 @@ class RefinementTurnJob < ApplicationJob
     Rails.logger.warn("[RefinementTurnJob] GitHub clone failed: #{e.class}: #{e.message}")
   end
 
-  def mark_failed!(submission, _message = nil)
+  def mark_failed!(submission, error = nil)
     submission.update!(refinement_status: "failed")
+    if error.is_a?(Exception)
+      PostHog.capture_exception(
+        error,
+        submission.collaborator.email,
+        { submission_id: submission.id, project_id: submission.project_id,
+          error_class: error.class.name, error_message: error.message }
+      )
+    end
     broadcast_processing_failed!(submission)
   end
 
@@ -40,6 +48,11 @@ class RefinementTurnJob < ApplicationJob
 
   def broadcast_processing_failed!(submission)
     RefinementChatBroadcaster.new(submission).processing_failed!
+    PostHog.capture(
+      distinct_id: submission.collaborator.email,
+      event: "refinement_turn_failed",
+      properties: { project_id: submission.project_id, submission_id: submission.id }
+    )
   rescue StandardError => e
     Rails.logger.warn("[RefinementTurnJob] Turbo broadcast failed: #{e.class}: #{e.message}")
   end
