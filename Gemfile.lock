@@ -250,6 +250,8 @@ GEM
     multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
+    neighbor (1.2.0)
+      activerecord (>= 7.2)
     net-http (0.9.1)
       uri (>= 0.11.1)
     net-imap (0.6.4)
@@ -546,6 +548,7 @@ DEPENDENCIES
   jbuilder
   kaminari (~> 1.2)
   letter_opener
+  neighbor
   octokit
   omniauth-github
   omniauth-rails_csrf_protection

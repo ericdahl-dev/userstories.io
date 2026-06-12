@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_10_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "vector"
 
   create_table "admin_credit_grants", force: :cascade do |t|
     t.integer "amount", null: false
@@ -192,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_130000) do
     t.text "body", null: false
     t.bigint "collaborator_id", null: false
     t.datetime "created_at", null: false
+    t.vector "embedding", limit: 1536
     t.integer "github_issue_number"
     t.string "github_issue_state"
     t.text "github_issue_summary"
@@ -207,6 +209,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_10_130000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["collaborator_id"], name: "index_submissions_on_collaborator_id"
+    t.index ["embedding"], name: "index_submissions_on_embedding", opclass: :vector_cosine_ops, using: :hnsw
     t.index ["github_issue_synced_at"], name: "index_submissions_on_github_issue_synced_at"
     t.index ["project_id"], name: "index_submissions_on_project_id"
     t.index ["status"], name: "index_submissions_on_status"
