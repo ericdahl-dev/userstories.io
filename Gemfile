@@ -3,6 +3,7 @@ source "https://rubygems.org"
 gem "rails", "~> 8.1.3"
 gem "propshaft"
 gem "pg", "~> 1.1"
+gem "neighbor"
 gem "puma", ">= 5.0"
 gem "importmap-rails"
 gem "turbo-rails"
@@ -68,3 +69,7 @@ gem "rack-attack", "~> 6.8"
 # PostHog analytics and error tracking
 gem "posthog-ruby"
 gem "posthog-rails"
+
+gem "kaminari", "~> 1.2"
+
+gem "stripe", "~> 19.2"

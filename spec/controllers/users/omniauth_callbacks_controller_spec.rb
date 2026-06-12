@@ -45,6 +45,19 @@ RSpec.describe Users::OmniauthCallbacksController, type: :controller do
       expect { get :github }.to change(User, :count).by(1)
     end
 
+    it "syncs email from GitHub on subsequent logins" do
+      user = create(
+        :user,
+        email: "old_#{oauth_uid}@example.com",
+        provider: "github",
+        uid: oauth_uid
+      )
+
+      get :github
+
+      expect(user.reload.email).to eq("oauth_#{oauth_uid}@example.com")
+    end
+
     it "redirects to registration when the user cannot be saved" do
       invalid_user = build(:user, email: "")
       allow(invalid_user).to receive(:persisted?).and_return(false)

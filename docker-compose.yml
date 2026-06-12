@@ -1,14 +1,29 @@
+x-app-environment: &app-environment
+  RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+  DATABASE_URL: postgres://${POSTGRES_USER:-userstories}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-userstories_production}
+  APP_HOST: ${APP_HOST}
+  RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
+  RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+  ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: ${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY}
+  ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: ${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY}
+  ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: ${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT}
+  OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+  OPENROUTER_MODEL: ${OPENROUTER_MODEL:-}
+
 services:
   postgres:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-userstories}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-userstories_production}
+      POSTGRES_DB: ${POSTGRES_DB:-userstories_development}
+    ports:
+      - "${POSTGRES_PUBLISH_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-userstories}", "-d", "${POSTGRES_DB:-userstories_production}"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-userstories}", "-d", "${POSTGRES_DB:-userstories_development}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,14 +36,10 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      DATABASE_URL: postgres://${POSTGRES_USER:-userstories}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-userstories_production}
-      APP_HOST: ${APP_HOST}
+      <<: *app-environment
       RAILS_ALLOWED_HOSTS: ${RAILS_ALLOWED_HOSTS:-}
       RAILS_ASSUME_SSL: ${RAILS_ASSUME_SSL:-true}
       RAILS_FORCE_SSL: ${RAILS_FORCE_SSL:-true}
-      RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
-      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
       WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
@@ -43,11 +54,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
-      DATABASE_URL: postgres://${POSTGRES_USER:-userstories}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-userstories_production}
-      APP_HOST: ${APP_HOST}
-      RAILS_LOG_LEVEL: ${RAILS_LOG_LEVEL:-info}
-      RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-5}
+      <<: *app-environment
       JOB_CONCURRENCY: ${JOB_CONCURRENCY:-5}
     restart: unless-stopped
 

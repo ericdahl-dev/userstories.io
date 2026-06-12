@@ -1,7 +1,15 @@
 require "rails_helper"
 
 RSpec.describe "Portal", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:project) { create(:project) }
+  let(:collaborator) { create(:collaborator) }
+
+  def verify_collaborator!(collab = collaborator)
+    token = collab.magic_tokens.create!
+    get verify_portal_session_path(share_token: project.share_token, token: token.token)
+  end
 
   describe "GET /p/:share_token" do
     it "returns 200 for valid share_token" do
@@ -13,6 +21,16 @@ RSpec.describe "Portal", type: :request do
       get portal_path(share_token: "invalid_token")
       expect(response).to have_http_status(:not_found)
       expect(response.body).to include("no longer valid")
+    end
+
+    it "renders project-specific share metadata" do
+      get portal_path(share_token: project.share_token)
+
+      expect(response.body).to include(%(<title>#{project.name} - Submit feedback</title>))
+      expect(response.body).to include(%(<meta name="description" content="Share feedback with #{project.name} on userstories.io. Submit user stories without needing a GitHub account.">))
+      expect(response.body).to include(%(<meta property="og:title" content="#{project.name} - Submit feedback">))
+      expect(response.body).to include(%(<meta property="og:url" content="http://www.example.com/p/#{project.share_token}">))
+      expect(response.body).to include(%(<meta property="og:image" content="http://www.example.com/social-card.png">))
     end
   end
 
@@ -59,14 +77,19 @@ RSpec.describe "Portal", type: :request do
   end
 
   describe "GET /p/:share_token/sessions/verify" do
-    let(:collaborator) { create(:collaborator) }
-
     context "with valid token" do
       let(:token) { collaborator.magic_tokens.create! }
 
       it "establishes collaborator session and redirects to submissions" do
         get verify_portal_session_path(share_token: project.share_token, token: token.token)
         expect(response).to redirect_to(portal_submissions_path(share_token: project.share_token))
+      end
+
+      it "stores collaborator session expiry metadata" do
+        freeze_time do
+          get verify_portal_session_path(share_token: project.share_token, token: token.token)
+          expect(session[:collaborator_authenticated_at]).to eq(Time.current.iso8601)
+        end
       end
 
       it "consumes the token" do
@@ -110,6 +133,59 @@ RSpec.describe "Portal", type: :request do
         get verify_portal_session_path(share_token: project.share_token, token: "bogus")
         expect(response).to redirect_to(portal_path(share_token: project.share_token))
       end
+    end
+  end
+
+  describe "DELETE /p/:share_token/sessions" do
+    it "signs out the collaborator and redirects to the portal landing" do
+      verify_collaborator!
+
+      delete portal_session_path(share_token: project.share_token)
+
+      expect(response).to redirect_to(portal_path(share_token: project.share_token))
+      expect(flash[:notice]).to eq("Signed out.")
+      expect(session[:collaborator_id]).to be_nil
+      expect(session[:collaborator_authenticated_at]).to be_nil
+    end
+
+    it "requires sign-in again after sign-out" do
+      verify_collaborator!
+      delete portal_session_path(share_token: project.share_token)
+
+      get portal_submissions_path(share_token: project.share_token)
+
+      expect(response).to redirect_to(new_portal_session_path(share_token: project.share_token))
+    end
+  end
+
+  describe "collaborator session expiry" do
+    it "expires the session after 30 days" do
+      verify_collaborator!
+
+      travel_to 31.days.from_now do
+        get portal_submissions_path(share_token: project.share_token)
+        expect(response).to redirect_to(new_portal_session_path(share_token: project.share_token))
+      end
+    end
+
+    it "keeps the session active within 30 days" do
+      verify_collaborator!
+
+      travel_to 29.days.from_now do
+        get portal_submissions_path(share_token: project.share_token)
+        expect(response).to have_http_status(:ok)
+      end
+    end
+  end
+
+  describe "signed-in portal UI" do
+    before { verify_collaborator! }
+
+    it "shows a sign-out button on submissions index" do
+      get portal_submissions_path(share_token: project.share_token)
+
+      expect(response.body).to include("Sign out")
+      expect(response.body).to include(portal_session_path(share_token: project.share_token))
     end
   end
 end

@@ -10,9 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_11_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+  enable_extension "vector"
+
+  create_table "admin_credit_grants", force: :cascade do |t|
+    t.integer "amount", null: false
+    t.datetime "created_at", null: false
+    t.bigint "granted_by_id", null: false
+    t.text "reason"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["created_at"], name: "index_admin_credit_grants_on_created_at"
+    t.index ["granted_by_id"], name: "index_admin_credit_grants_on_granted_by_id"
+    t.index ["user_id"], name: "index_admin_credit_grants_on_user_id"
+  end
 
   create_table "collaborators", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -136,6 +149,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_150000) do
 
   create_table "projects", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "github_clone_refreshed_at"
+    t.string "github_clone_status"
     t.string "github_repo"
     t.string "name"
     t.string "share_token", null: false
@@ -155,10 +170,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_150000) do
     t.index ["submission_id"], name: "index_refinement_messages_on_submission_id"
   end
 
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.bigint "channel_hash", null: false
+    t.datetime "created_at", null: false
+    t.binary "payload", null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
+  create_table "stripe_webhook_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "event_type", null: false
+    t.datetime "processed_at", null: false
+    t.string "stripe_event_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["stripe_event_id"], name: "index_stripe_webhook_events_on_stripe_event_id", unique: true
+  end
+
   create_table "submissions", force: :cascade do |t|
     t.text "body", null: false
     t.bigint "collaborator_id", null: false
     t.datetime "created_at", null: false
+    t.vector "embedding", limit: 1536
     t.integer "github_issue_number"
     t.string "github_issue_state"
     t.text "github_issue_summary"
@@ -174,6 +209,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_150000) do
     t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["collaborator_id"], name: "index_submissions_on_collaborator_id"
+    t.index ["embedding"], name: "index_submissions_on_embedding", opclass: :vector_cosine_ops, using: :hnsw
     t.index ["github_issue_synced_at"], name: "index_submissions_on_github_issue_synced_at"
     t.index ["project_id"], name: "index_submissions_on_project_id"
     t.index ["status"], name: "index_submissions_on_status"
@@ -184,17 +220,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_150000) do
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.text "github_token"
+    t.boolean "grandfathered_projects", default: false, null: false
+    t.string "plan", default: "free", null: false
     t.string "provider"
+    t.integer "refinement_credit_balance", default: 0, null: false
+    t.integer "refinement_usage_count", default: 0, null: false
+    t.date "refinement_usage_period_start"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.string "stripe_customer_id"
+    t.string "stripe_subscription_id"
     t.string "uid"
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["provider", "uid"], name: "index_users_on_provider_and_uid", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["stripe_customer_id"], name: "index_users_on_stripe_customer_id", unique: true
+    t.index ["stripe_subscription_id"], name: "index_users_on_stripe_subscription_id", unique: true
   end
 
+  add_foreign_key "admin_credit_grants", "users"
+  add_foreign_key "admin_credit_grants", "users", column: "granted_by_id"
   add_foreign_key "magic_tokens", "collaborators"
   add_foreign_key "projects", "users"
   add_foreign_key "refinement_messages", "submissions"

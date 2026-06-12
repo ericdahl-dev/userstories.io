@@ -7,6 +7,9 @@
 # Usage: ./script/sync_doppler_to_coolify.sh
 set -euo pipefail
 
+# Prefer user-local Coolify CLI (1.x) over stale /usr/local/bin installs (0.x).
+export PATH="${HOME}/.local/bin:${PATH}"
+
 APP_UUID="zj5rf8d29wpz8dbxtbxphyrv"
 PROJECT="userstories"
 

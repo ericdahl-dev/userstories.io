@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -64,6 +64,7 @@ jobs:
       RAILS_ENV: test
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/userstories_test
       COVERAGE: "true"
+      FERRUM_PROCESS_TIMEOUT: "120"
     steps:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
@@ -74,4 +75,4 @@ jobs:
       - name: Build assets
         run: bin/rails assets:precompile
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec rspec -t '~screenshot'

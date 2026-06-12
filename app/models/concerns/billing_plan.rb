@@ -1,0 +1,79 @@
+# frozen_string_literal: true
+
+module BillingPlan
+  extend ActiveSupport::Concern
+
+  PLANS = %w[free pro].freeze
+  FREE_REFINEMENTS_PER_MONTH = 10
+  PRO_REFINEMENTS_PER_MONTH = 200
+  FREE_PROJECT_LIMIT = 1
+  FREE_MODEL = "openai/gpt-4o-mini"
+
+  included do
+    validates :plan, inclusion: { in: PLANS }
+  end
+
+  def pro?
+    plan == "pro"
+  end
+
+  def free?
+    !pro?
+  end
+
+  def refinement_quota
+    pro? ? PRO_REFINEMENTS_PER_MONTH : FREE_REFINEMENTS_PER_MONTH
+  end
+
+  def plan_quota_remaining
+    reset_refinement_usage_if_needed!
+    [ refinement_quota - refinement_usage_count, 0 ].max
+  end
+
+  def refinement_quota_remaining
+    plan_quota_remaining + refinement_credit_balance
+  end
+
+  def refinement_quota_exhausted?
+    refinement_quota_remaining.zero?
+  end
+
+  def can_create_project?
+    return true if pro?
+    return true if grandfathered_projects?
+
+    projects.count < FREE_PROJECT_LIMIT
+  end
+
+  def consume_refinement_session!
+    reset_refinement_usage_if_needed!
+
+    if refinement_usage_count < refinement_quota
+      increment!(:refinement_usage_count)
+    else
+      decrement!(:refinement_credit_balance)
+    end
+  end
+
+  def reset_refinement_usage_if_needed!
+    current_period = Date.current.beginning_of_month
+
+    if refinement_usage_period_start.nil?
+      update!(refinement_usage_period_start: current_period)
+    elsif refinement_usage_period_start < current_period
+      update!(refinement_usage_count: 0, refinement_usage_period_start: current_period)
+    end
+  end
+
+  def activate_pro!(stripe_customer_id: nil, stripe_subscription_id: nil)
+    update!(
+      plan: "pro",
+      stripe_customer_id: stripe_customer_id.presence || self.stripe_customer_id,
+      stripe_subscription_id: stripe_subscription_id.presence || self.stripe_subscription_id
+    )
+  end
+
+  def downgrade_to_free!
+    update!(plan: "free", stripe_subscription_id: nil)
+  end
+end

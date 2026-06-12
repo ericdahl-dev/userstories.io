@@ -63,6 +63,16 @@ RSpec.describe GithubClient do
       expect(client.file_content(repo: "o/r", path: "README.md")).to eq("class App\nend")
     end
 
+    it "returns UTF-8 encoded content safe for prompt interpolation" do
+      entry = double(type: "file", size: 100, content: Base64.encode64("class App\nend"))
+      allow(fake_octokit).to receive(:contents).with("o/r", path: "README.md").and_return(entry)
+
+      content = client.file_content(repo: "o/r", path: "README.md")
+
+      expect(content.encoding).to eq(Encoding::UTF_8)
+      expect { "prefix #{content} suffix" }.not_to raise_error
+    end
+
     it "returns nil for directories" do
       allow(fake_octokit).to receive(:contents).with("o/r", path: "app").and_return([])
 

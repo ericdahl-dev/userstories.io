@@ -1,11 +1,16 @@
 class Submission < ApplicationRecord
+  has_neighbors :embedding
+
   GITHUB_SYNC_INTERVAL = 5.minutes
   MAX_REFINEMENT_COLLABORATOR_REPLIES = 2
   REFINEMENT_STATUSES = %w[pending processing completed failed].freeze
+  EMBEDDING_DIMENSIONS = 1536
 
   belongs_to :collaborator
   belongs_to :project
   has_many :refinement_messages, dependent: :destroy
+
+  after_commit :enqueue_embedding_generation, on: :create
 
   STATUSES = %w[pending accepted shipped dismissed].freeze
 
@@ -19,6 +24,7 @@ class Submission < ApplicationRecord
   scope :pending_review, -> { where(status: "pending") }
   scope :accepted,       -> { where(status: "accepted") }
   scope :shipped,        -> { where(status: "shipped") }
+  scope :visible_to_collaborator, -> { where.not(status: "dismissed") }
   scope :recent,         -> { order(created_at: :desc) }
 
   def acceptable?  = status == "pending"
@@ -124,10 +130,29 @@ class Submission < ApplicationRecord
   end
 
   def lock_refinement!
+    return if refinement_locked?
+
     update!(refinement_locked_at: Time.current)
   end
 
+  def refinement_assistant_summary(max_chars: 500)
+    message = refinement_messages.where(role: "assistant").order(created_at: :asc).first
+    return if message.blank?
+
+    message.body.to_s.truncate(max_chars)
+  end
+
+  def embeddable_text
+    [ title, body ].join("\n\n")
+  end
+
   private
+
+  def enqueue_embedding_generation
+    return unless EmbeddingClient.configured?
+
+    GenerateSubmissionEmbeddingJob.perform_later(self)
+  end
 
   def use_refined_text?
     refined_title.present? &&

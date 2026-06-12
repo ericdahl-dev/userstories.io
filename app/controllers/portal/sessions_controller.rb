@@ -27,7 +27,8 @@ class Portal::SessionsController < PortalController
     collaborator = token.collaborator
     token.consume!
     reset_session
-    session[:collaborator_id] = collaborator.id
+    session[:collaborator_id] = token.collaborator_id
+    session[:collaborator_authenticated_at] = Time.current.iso8601
 
     PostHog.identify(
       distinct_id: collaborator.email,
@@ -40,5 +41,12 @@ class Portal::SessionsController < PortalController
     )
 
     redirect_to portal_submissions_path(share_token: @project.share_token)
+  end
+
+  def destroy
+    clear_collaborator_session!
+
+    redirect_to portal_path(share_token: @project.share_token),
+                notice: "Signed out."
   end
 end

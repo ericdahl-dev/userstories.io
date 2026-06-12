@@ -40,7 +40,7 @@ RSpec.describe "Portal::Submissions", type: :request do
     context "when authenticated" do
       before { sign_in_collaborator(collaborator) }
 
-      it "creates a submission and redirects to refinement chat" do
+      it "creates a submission and redirects to refinement chat with confirmation" do
         expect {
           post portal_submissions_path(share_token: project.share_token),
                params: { submission: { title: "A story", body: "Some details" } }
@@ -48,6 +48,10 @@ RSpec.describe "Portal::Submissions", type: :request do
 
         submission = Submission.last
         expect(response).to redirect_to(portal_submission_refine_path(share_token: project.share_token, id: submission))
+        expect(flash[:notice]).to eq("Story received — let's refine it before review.")
+        follow_redirect!
+        expect(response.body).to include("Story received")
+        expect(response.body).to include("refine it before review")
       end
 
       it "creates submission with pending status" do
@@ -97,6 +101,16 @@ RSpec.describe "Portal::Submissions", type: :request do
         other_submission = create(:submission, collaborator: other_collaborator, project: project)
         get portal_submissions_path(share_token: project.share_token)
         expect(response.body).not_to include(other_submission.title)
+      end
+
+      it "does not show dismissed submissions" do
+        visible = create(:submission, collaborator: collaborator, project: project, status: "pending", title: "Visible story")
+        dismissed = create(:submission, collaborator: collaborator, project: project, status: "dismissed", title: "Dismissed story")
+
+        get portal_submissions_path(share_token: project.share_token)
+
+        expect(response.body).to include(visible.title)
+        expect(response.body).not_to include(dismissed.title)
       end
 
       it "shows cached GitHub summary for accepted submissions" do

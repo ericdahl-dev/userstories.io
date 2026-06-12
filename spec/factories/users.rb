@@ -5,5 +5,9 @@ FactoryBot.define do
     provider { "github" }
     sequence(:uid) { |n| "github_uid_#{n}" }
     github_token { "fake_github_token" }
+
+    trait :pro do
+      plan { "pro" }
+    end
   end
 end

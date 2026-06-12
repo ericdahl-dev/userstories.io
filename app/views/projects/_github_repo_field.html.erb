@@ -6,7 +6,7 @@
       <%= label_tag "project_github_repo", "GitHub repository", class: "block text-sm font-medium text-stone-700 dark:text-stone-300" %>
     <% end %>
     <%= link_to "Refresh list",
-          github_repos_projects_path,
+          github_repos_projects_path(project_id: (project.id if project.persisted?), github_repo: project.github_repo),
           class: "link-accent shrink-0 text-xs",
           data: { turbo_frame: "github_repos" } %>
   </div>

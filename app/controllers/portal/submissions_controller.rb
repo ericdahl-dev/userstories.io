@@ -4,6 +4,7 @@ class Portal::SubmissionsController < PortalController
   def index
     @submissions = current_collaborator.submissions
                                        .where(project: @project)
+                                       .visible_to_collaborator
                                        .recent
 
     sync_github_statuses(@submissions)
@@ -23,7 +24,8 @@ class Portal::SubmissionsController < PortalController
         event: "submission_created",
         properties: { project_id: @project.id, submission_id: @submission.id }
       )
-      redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission)
+      redirect_to portal_submission_refine_path(share_token: @project.share_token, id: @submission),
+                  notice: "Story received — let's refine it before review."
     else
       render :new, status: :unprocessable_entity
     end

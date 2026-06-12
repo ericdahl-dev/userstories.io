@@ -1,0 +1,14 @@
+<%# locals: (stories:) %>
+<div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800 dark:bg-amber-950">
+  <h2 class="text-sm font-semibold text-amber-950 dark:text-amber-100">Similar stories on this project</h2>
+  <ul class="mt-2 space-y-2 text-sm text-amber-900 dark:text-amber-100">
+    <% stories.each do |story| %>
+      <li>
+        <span class="font-medium"><%= story[:title] %></span>
+        by <%= story[:submitter_label] %>
+        (<%= story[:status] %>, <%= story[:created_at].strftime("%b %-d, %Y") %>)
+        — <%= story[:relationship] %>
+      </li>
+    <% end %>
+  </ul>
+</div>

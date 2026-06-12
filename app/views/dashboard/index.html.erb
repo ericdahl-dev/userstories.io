@@ -8,6 +8,8 @@
     <p class="mt-0.5 text-sm text-stone-500">Review pending submissions from your collaborators.</p>
   </div>
 
+  <%= render "shared/plan_usage", user: current_user %>
+
   <% if @pending_submissions.any? %>
     <ul class="card-list">
       <% @pending_submissions.each do |submission| %>
@@ -26,6 +28,10 @@
         </li>
       <% end %>
     </ul>
+
+    <div class="mt-6 flex justify-center">
+      <%= paginate @pending_submissions %>
+    </div>
   <% else %>
     <div class="empty-state">
       <p class="text-sm font-semibold text-stone-900 dark:text-stone-100">Inbox zero</p>

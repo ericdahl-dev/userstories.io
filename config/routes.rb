@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   scope "/p/:share_token" do
     get  "/",        to: "portal#show",         as: :portal
     post "/sessions", to: "portal/sessions#create", as: :portal_sessions
+    delete "/sessions", to: "portal/sessions#destroy", as: :portal_session
     get  "/sessions/new", to: "portal/sessions#new", as: :new_portal_session
     get  "/sessions/verify", to: "portal/sessions#verify", as: :verify_portal_session
     get  "/submissions", to: "portal/submissions#index", as: :portal_submissions
@@ -36,6 +37,21 @@ Rails.application.routes.draw do
   end
 
   get "/dashboard", to: "dashboard#index", as: :dashboard
+
+  get "/billing/success", to: "billing#success", as: :billing_success
+  get "/billing/cancel", to: "billing#cancel", as: :billing_cancel
+  post "/billing/checkout", to: "billing#checkout", as: :billing_checkout
+
+  post "/stripe/webhooks", to: "stripe_webhooks#create"
+
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :developers, only: %i[index show] do
+      member do
+        post :grant_credits
+      end
+    end
+  end
 
   root to: "home#index"
 

@@ -1,0 +1,36 @@
+<%# locals: (user:) %>
+<div class="mb-6 rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
+  <p class="font-medium text-stone-900 dark:text-stone-100">
+    <%= user.pro? ? "Pro plan" : "Free plan" %>
+  </p>
+  <p class="mt-1">
+    AI refinements: <strong><%= user.refinement_usage_count %> / <%= user.refinement_quota %></strong> used this month
+  </p>
+  <% if user.refinement_credit_balance.positive? %>
+    <p class="mt-1">
+      Bonus credits: <strong><%= user.refinement_credit_balance %></strong>
+    </p>
+  <% end %>
+  <% if user.refinement_quota_exhausted? %>
+    <p class="mt-2 text-amber-800 dark:text-amber-200">
+      Monthly refinement quota reached. Upgrade to Pro for 200 refinements/month.
+    </p>
+  <% elsif user.free? %>
+    <p class="mt-2 text-stone-500">
+      Upgrade to Pro for unlimited projects and 200 refinements/month.
+    </p>
+  <% end %>
+
+  <% if user.free? && StripeBilling.configured? %>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <%= button_to "Upgrade — $12/mo",
+            billing_checkout_path(interval: "monthly"),
+            method: :post,
+            class: "btn-primary-sm" %>
+      <%= button_to "Upgrade — $99/yr",
+            billing_checkout_path(interval: "annual"),
+            method: :post,
+            class: "btn-secondary text-xs" %>
+    </div>
+  <% end %>
+</div>

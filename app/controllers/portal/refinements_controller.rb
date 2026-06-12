@@ -1,9 +1,11 @@
 class Portal::RefinementsController < PortalController
   before_action :require_collaborator
   before_action :set_submission
+  before_action :set_refinement_quota_blocked, only: %i[show create_message]
+  before_action :set_similar_stories, only: %i[show create_message]
 
   def show
-    enqueue_initial_refinement!
+    enqueue_initial_refinement! unless @refinement_quota_blocked
     @messages = @submission.refinement_messages.chronological
   end
 
@@ -55,7 +57,9 @@ class Portal::RefinementsController < PortalController
   end
 
   def finalize
+    was_locked = @submission.refinement_locked?
     @submission.lock_refinement!
+    NotifyRefinementFinalizedJob.perform_later(@submission) unless was_locked
     PostHog.capture(
       distinct_id: current_collaborator.email,
       event: "refinement_finalized",
@@ -83,6 +87,14 @@ class Portal::RefinementsController < PortalController
 
   def message_params
     params.require(:refinement_message).permit(:body)
+  end
+
+  def set_refinement_quota_blocked
+    @refinement_quota_blocked = RefinementQuotaGuard.blocked?(@submission)
+  end
+
+  def set_similar_stories
+    @similar_stories = SubmissionHistoryContext.new(@submission).similar_to
   end
 
   def enqueue_initial_refinement!

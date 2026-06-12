@@ -2,15 +2,20 @@
 
 <%= turbo_stream_from @submission %>
 
-<div id="main-content" class="flex min-h-[100dvh] flex-col surface-page">
+<div id="main-content"
+     class="flex min-h-[100dvh] flex-col surface-page"
+     data-controller="refinement-fallback"
+     data-refinement-fallback-processing-value="<%= @submission.refinement_processing? %>"
+     data-refinement-fallback-url-value="<%= portal_submission_refine_path(share_token: @project.share_token, id: @submission) %>">
   <header class="border-b border-stone-200 bg-white px-6 py-4 dark:border-stone-800 dark:bg-stone-900">
     <div class="mx-auto flex max-w-2xl items-center justify-between gap-4">
       <div>
         <p class="text-sm font-semibold text-stone-900 dark:text-stone-100"><%= @project.name %></p>
-        <p class="mt-0.5 text-xs text-stone-500">Refine your story before review</p>
+        <p class="mt-0.5 text-xs text-stone-500">Chat with the assistant, then submit when ready</p>
       </div>
       <div class="flex items-center gap-3">
         <%= render "shared/theme_toggle" %>
+        <%= render "portal/sign_out_button", project: @project %>
         <%= link_to "All submissions", portal_submissions_path(share_token: @project.share_token), class: "btn-ghost text-xs" %>
       </div>
     </div>
@@ -30,10 +35,20 @@
         </div>
       <% end %>
 
+      <% if @refinement_quota_blocked %>
+        <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200" role="status">
+          AI refinement unavailable — the project owner has reached their monthly limit. You can still submit your story for review.
+        </div>
+      <% end %>
+
       <% if @submission.refinement_at_cap? || @submission.refinement_locked? %>
         <div class="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
           Refinement complete — submit for review when you're ready.
         </div>
+      <% end %>
+
+      <% if @similar_stories.present? %>
+        <%= render "portal/refinements/similar_stories", stories: @similar_stories %>
       <% end %>
 
       <div class="card p-5">

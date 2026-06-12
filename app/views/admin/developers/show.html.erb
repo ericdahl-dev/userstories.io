@@ -1,0 +1,73 @@
+<% content_for :title, @developer.email %>
+
+<%= render "shared/developer_nav" %>
+
+<main id="main-content" class="mx-auto max-w-6xl px-6 py-10">
+  <div class="mb-8">
+    <p class="text-sm text-stone-500">
+      <%= link_to "Developers", admin_developers_path, class: "text-sm text-stone-500 hover:text-stone-700 dark:hover:text-stone-300" %>
+    </p>
+    <h1 class="mt-1 text-xl font-semibold text-stone-900 dark:text-stone-100"><%= @developer.email %></h1>
+  </div>
+
+  <section class="mb-8 grid gap-4 sm:grid-cols-3">
+    <div class="card p-5">
+      <p class="text-xs font-medium uppercase tracking-wide text-stone-500">Plan</p>
+      <p class="mt-2 text-lg font-semibold capitalize text-stone-900 dark:text-stone-100"><%= @developer.plan %></p>
+    </div>
+    <div class="card p-5">
+      <p class="text-xs font-medium uppercase tracking-wide text-stone-500">Monthly usage</p>
+      <p class="mt-2 text-lg font-semibold text-stone-900 dark:text-stone-100">
+        <%= @developer.refinement_usage_count %> / <%= @developer.refinement_quota %>
+      </p>
+      <p class="mt-1 text-xs text-stone-500"><%= @developer.plan_quota_remaining %> plan sessions remaining</p>
+    </div>
+    <div class="card p-5">
+      <p class="text-xs font-medium uppercase tracking-wide text-stone-500">Bonus credits</p>
+      <p class="mt-2 text-lg font-semibold text-stone-900 dark:text-stone-100"><%= @developer.refinement_credit_balance %></p>
+      <p class="mt-1 text-xs text-stone-500">Do not reset monthly</p>
+    </div>
+  </section>
+
+  <section class="mb-8 card p-5">
+    <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Grant credits</h2>
+    <p class="mt-1 text-xs text-stone-500">Adds refinement sessions beyond the developer's plan quota.</p>
+
+    <%= form_with url: grant_credits_admin_developer_path(@developer), method: :post, class: "mt-4 flex flex-wrap items-end gap-3" do %>
+      <div>
+        <%= label_tag :amount, "Credits", class: "mb-1.5 block text-sm font-medium text-stone-700 dark:text-stone-300" %>
+        <%= number_field_tag :amount, 1, min: 1, step: 1, required: true, class: "input-field w-28" %>
+      </div>
+      <div class="min-w-[16rem] flex-1">
+        <%= label_tag :reason, "Reason (optional)", class: "mb-1.5 block text-sm font-medium text-stone-700 dark:text-stone-300" %>
+        <%= text_field_tag :reason, nil, placeholder: "Early adopter comp", class: "input-field w-full" %>
+      </div>
+      <%= submit_tag "Grant credits", class: "btn-primary" %>
+    <% end %>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="text-sm font-semibold text-stone-900 dark:text-stone-100">Recent grants</h2>
+
+    <% if @recent_grants.any? %>
+      <ul class="mt-4 divide-y divide-stone-200 dark:divide-stone-800">
+        <% @recent_grants.each do |grant| %>
+          <li class="py-3 text-sm">
+            <p class="font-medium text-stone-900 dark:text-stone-100">
+              +<%= grant.amount %> credits
+              <span class="font-normal text-stone-500">by <%= grant.granted_by.email %></span>
+            </p>
+            <p class="mt-0.5 text-xs text-stone-500">
+              <%= l(grant.created_at, format: :long) %>
+              <% if grant.reason.present? %>
+                · <%= grant.reason %>
+              <% end %>
+            </p>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="mt-4 text-sm text-stone-500">No credits granted yet.</p>
+    <% end %>
+  </section>
+</main>

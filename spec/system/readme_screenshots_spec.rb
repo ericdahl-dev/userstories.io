@@ -5,7 +5,7 @@
 
 require "rails_helper"
 
-RSpec.describe "README screenshots", type: :system, js: true do
+RSpec.describe "README screenshots", :screenshot, type: :system, js: true do
   include Warden::Test::Helpers
 
   OUTPUT = Rails.root.join("docs/screenshots")
@@ -120,7 +120,7 @@ RSpec.describe "README screenshots", type: :system, js: true do
 
     visit portal_submission_refine_path(share_token: project.share_token, id: dark_mode)
     use_light_theme!
-    expect(page).to have_content("Refine your story")
+    expect(page).to have_content("Chat with the assistant")
     capture "refinement-chat"
   end
 end
