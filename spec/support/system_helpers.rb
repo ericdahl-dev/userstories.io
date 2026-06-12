@@ -35,8 +35,15 @@ RSpec.configure do |config|
   end
 
   config.after type: :system do
+    driver = Capybara.current_session.driver
+    browser_started = driver.instance_variable_get(:@started) if driver
+
     Capybara.reset_sessions!
-    Capybara.current_session.driver&.reset!
+
+    if ENV["CI"] && browser_started && driver.respond_to?(:restart)
+      driver.restart
+    end
+
     Warden.test_reset!
   end
 end

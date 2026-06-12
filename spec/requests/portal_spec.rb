@@ -22,6 +22,16 @@ RSpec.describe "Portal", type: :request do
       expect(response).to have_http_status(:not_found)
       expect(response.body).to include("no longer valid")
     end
+
+    it "renders project-specific share metadata" do
+      get portal_path(share_token: project.share_token)
+
+      expect(response.body).to include(%(<title>#{project.name} - Submit feedback</title>))
+      expect(response.body).to include(%(<meta name="description" content="Share feedback with #{project.name} on userstories.io. Submit user stories without needing a GitHub account.">))
+      expect(response.body).to include(%(<meta property="og:title" content="#{project.name} - Submit feedback">))
+      expect(response.body).to include(%(<meta property="og:url" content="http://www.example.com/p/#{project.share_token}">))
+      expect(response.body).to include(%(<meta property="og:image" content="http://www.example.com/social-card.png">))
+    end
   end
 
   describe "POST /p/:share_token/sessions (request magic link)" do

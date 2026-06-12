@@ -2,6 +2,7 @@ class Portal::RefinementsController < PortalController
   before_action :require_collaborator
   before_action :set_submission
   before_action :set_refinement_quota_blocked, only: %i[show create_message]
+  before_action :set_similar_stories, only: %i[show create_message]
 
   def show
     enqueue_initial_refinement! unless @refinement_quota_blocked
@@ -76,6 +77,10 @@ class Portal::RefinementsController < PortalController
 
   def set_refinement_quota_blocked
     @refinement_quota_blocked = RefinementQuotaGuard.blocked?(@submission)
+  end
+
+  def set_similar_stories
+    @similar_stories = SubmissionHistoryContext.new(@submission).similar_to
   end
 
   def enqueue_initial_refinement!

@@ -48,7 +48,17 @@ RSpec.describe SubmissionRefiner do
       expect(submission.refined_body).to include("theme toggle")
     end
 
-    it "includes repo source and prior submission in user prompt" do
+    it "includes repo source, prior submission, and pre-detected similar stories in user prompt" do
+      other = create(:collaborator, name: "brave-otter-77")
+      create(
+        :submission,
+        project: project,
+        collaborator: other,
+        title: "Dark mode for portal",
+        body: "Add dark theme support in the collaborator portal",
+        status: "accepted"
+      )
+
       captured_messages = nil
       allow(llm).to receive(:chat) do |messages:, **|
         captured_messages = messages
@@ -61,6 +71,9 @@ RSpec.describe SubmissionRefiner do
       expect(user_prompt).to include("app/controllers/application_controller.rb")
       expect(user_prompt).to include(prior.title)
       expect(user_prompt).to include("Dark mode")
+      expect(user_prompt).to include("Pre-detected similar submissions on this project")
+      expect(user_prompt).to include("Dark mode for portal")
+      expect(user_prompt).to include("brave-otter-77")
     end
   end
 end

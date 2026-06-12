@@ -5,7 +5,15 @@ RSpec.describe "Portal::Refinements", type: :request do
 
   let(:project) { create(:project) }
   let(:collaborator) { create(:collaborator) }
-  let(:submission) { create(:submission, project: project, collaborator: collaborator) }
+  let(:submission) do
+    create(
+      :submission,
+      project: project,
+      collaborator: collaborator,
+      title: "Enable dark mode",
+      body: "Users want a theme switch for low-light use in the portal"
+    )
+  end
 
   def sign_in_collaborator(collab)
     post portal_sessions_path(share_token: project.share_token), params: { email: collab.email }
@@ -73,6 +81,42 @@ RSpec.describe "Portal::Refinements", type: :request do
 
         expect(response).to redirect_to(portal_submissions_path(share_token: project.share_token))
         expect(flash[:alert]).to eq("Submission not found.")
+      end
+
+      it "shows similar stories from other collaborators on the same project" do
+        other = create(:collaborator, name: "brave-otter-77")
+        create(
+          :submission,
+          project: project,
+          collaborator: other,
+          title: "Dark mode for portal",
+          body: "Add dark theme support in the collaborator portal",
+          status: "accepted"
+        )
+
+        get portal_submission_refine_path(share_token: project.share_token, id: submission)
+
+        expect(response.body).to include("Similar stories on this project")
+        expect(response.body).to include("Dark mode for portal")
+        expect(response.body).to include("brave-otter-77")
+        expect(response.body).to include("likely duplicate")
+      end
+
+      it "does not leak similar stories from other projects" do
+        other_project = create(:project)
+        other = create(:collaborator)
+        create(
+          :submission,
+          project: other_project,
+          collaborator: other,
+          title: "Dark mode for portal",
+          body: "Add dark theme support in the collaborator portal",
+          status: "accepted"
+        )
+
+        get portal_submission_refine_path(share_token: project.share_token, id: submission)
+
+        expect(response.body).not_to include("Dark mode for portal")
       end
     end
 
