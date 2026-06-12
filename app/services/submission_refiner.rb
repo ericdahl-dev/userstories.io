@@ -4,7 +4,8 @@ class SubmissionRefiner
   SYSTEM_PROMPT = <<~PROMPT.freeze
     You help collaborators refine user stories for a software project before developer triage.
     Ground every refinement in the supplied repository source files and project submission history.
-    Cite similar stories by title and status — never invent submission IDs.
+    When pre-detected similar submissions are provided, cite them by title and status in
+    ## Similar stories on this project — never invent submission IDs or omit high-score matches.
     Say a feature is already implemented only with evidence from shipped stories, closed GitHub issues, or code references.
     Be helpful and concise. This is a short refinement pass, not an open-ended workshop.
     Respond in markdown with exactly these sections:
@@ -14,7 +15,7 @@ class SubmissionRefiner
     **Details:** ...
 
     ## Similar stories on this project
-    - _Story title_ (status, date) — how it relates
+    - _Story title_ by submitter label (status, date) — relationship (likely duplicate, related ask, repeat submission, or already shipped)
     - or "None found"
 
     ## Already implemented?
@@ -56,6 +57,9 @@ class SubmissionRefiner
 
       Project submission history:
       #{history_context}
+
+      Pre-detected similar submissions on this project:
+      #{similar_context}
     PROMPT
   end
 
@@ -67,6 +71,10 @@ class SubmissionRefiner
 
   def history_context
     SubmissionHistoryContext.new(@submission).to_prompt
+  end
+
+  def similar_context
+    SubmissionHistoryContext.new(@submission).to_similar_prompt
   end
 
   def persist_assistant_turn!(content)
