@@ -1,6 +1,6 @@
 PostHog.init do |config|
   config.api_key = ENV.fetch("POSTHOG_PROJECT_TOKEN", nil)
-  config.host    = ENV.fetch("POSTHOG_HOST", nil)
+  config.host    = ENV.fetch("POSTHOG_HOST", "https://us.i.posthog.com")
   config.on_error = proc { |_status, msg| Rails.logger.error("PostHog error: #{msg}") }
   config.test_mode = true if Rails.env.test?
 end

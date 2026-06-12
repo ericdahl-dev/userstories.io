@@ -40,6 +40,11 @@ class RefinementTurnJob < ApplicationJob
 
   def broadcast_processing_failed!(submission)
     RefinementChatBroadcaster.new(submission).processing_failed!
+    PostHog.capture(
+      distinct_id: submission.collaborator.email,
+      event: "refinement_turn_failed",
+      properties: { project_id: submission.project_id, submission_id: submission.id }
+    )
   rescue StandardError => e
     Rails.logger.warn("[RefinementTurnJob] Turbo broadcast failed: #{e.class}: #{e.message}")
   end

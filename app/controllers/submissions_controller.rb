@@ -11,6 +11,11 @@ class SubmissionsController < ApplicationController
 
   def show
     authorize @submission
+    PostHog.capture(
+      distinct_id: current_user.posthog_distinct_id,
+      event: "submission_viewed",
+      properties: { project_id: @project.id, submission_id: @submission.id, status: @submission.status }
+    )
   end
 
   def accept

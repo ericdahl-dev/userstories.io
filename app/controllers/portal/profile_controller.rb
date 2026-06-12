@@ -6,6 +6,11 @@ class Portal::ProfileController < PortalController
 
   def update
     if current_collaborator.update(profile_params)
+      PostHog.capture(
+        distinct_id: current_collaborator.email,
+        event: "profile_updated",
+        properties: { project_id: @project.id }
+      )
       redirect_to portal_submissions_path(share_token: @project.share_token),
                   notice: "Display name updated."
     else
