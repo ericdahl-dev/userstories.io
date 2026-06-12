@@ -7,6 +7,7 @@ class RefineSubmissionJob < ApplicationJob
     return mark_failed!(submission) unless LlmClient.configured?
 
     ensure_repo_clone!(submission.project)
+    ensure_submission_embedding!(submission)
 
     submission.update!(refinement_status: "processing")
     SubmissionRefiner.new(submission).refine!
@@ -24,6 +25,14 @@ class RefineSubmissionJob < ApplicationJob
     GithubRepoClone.new(project).ensure!
   rescue StandardError => e
     Rails.logger.warn("[RefineSubmissionJob] GitHub clone failed: #{e.class}: #{e.message}")
+  end
+
+  def ensure_submission_embedding!(submission)
+    return unless EmbeddingClient.configured?
+
+    SubmissionEmbeddingGenerator.generate!(submission)
+  rescue EmbeddingClient::Error => e
+    Rails.logger.warn("[RefineSubmissionJob] Embedding failed: #{e.class}: #{e.message}")
   end
 
   def awaiting_initial_reply?(submission)

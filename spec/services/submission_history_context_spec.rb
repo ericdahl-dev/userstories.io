@@ -29,4 +29,27 @@ RSpec.describe SubmissionHistoryContext do
     expect(mine[:same_collaborator]).to be true
     expect(theirs[:same_collaborator]).to be false
   end
+
+  it "prefers semantically similar submissions when embeddings exist" do
+    submission.update!(embedding: normalized_vector(1.0))
+
+    similar = create(:submission, project: project, title: "Night theme", body: "Dark UI")
+    similar.update!(embedding: normalized_vector(1.0, 0.05))
+
+    unrelated = create(:submission, project: project, title: "Export CSV", body: "Download data")
+    unrelated.update!(embedding: normalized_vector(0.0, 1.0))
+
+    entries = context.fetch_entries
+
+    expect(entries.first[:title]).to eq("Night theme")
+    expect(entries.first[:similarity_score]).to be_present
+    expect(entries.map { |e| e[:title] }).not_to include(unrelated.title)
+  end
+
+  def normalized_vector(*components)
+    vector = Array.new(Submission::EMBEDDING_DIMENSIONS, 0.0)
+    components.each_with_index { |value, index| vector[index] = value }
+    magnitude = Math.sqrt(vector.sum { |value| value * value })
+    vector.map { |value| value / magnitude }
+  end
 end

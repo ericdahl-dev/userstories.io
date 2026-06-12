@@ -1,11 +1,16 @@
 class Submission < ApplicationRecord
+  has_neighbors :embedding
+
   GITHUB_SYNC_INTERVAL = 5.minutes
   MAX_REFINEMENT_COLLABORATOR_REPLIES = 2
   REFINEMENT_STATUSES = %w[pending processing completed failed].freeze
+  EMBEDDING_DIMENSIONS = 1536
 
   belongs_to :collaborator
   belongs_to :project
   has_many :refinement_messages, dependent: :destroy
+
+  after_commit :enqueue_embedding_generation, on: :create
 
   STATUSES = %w[pending accepted shipped dismissed].freeze
 
@@ -137,7 +142,17 @@ class Submission < ApplicationRecord
     message.body.to_s.truncate(max_chars)
   end
 
+  def embeddable_text
+    [ title, body ].join("\n\n")
+  end
+
   private
+
+  def enqueue_embedding_generation
+    return unless EmbeddingClient.configured?
+
+    GenerateSubmissionEmbeddingJob.perform_later(self)
+  end
 
   def use_refined_text?
     refined_title.present? &&
