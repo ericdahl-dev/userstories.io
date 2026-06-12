@@ -1,0 +1,140 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="102" y1="58" x2="1098" y2="572" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FCF8F1"/>
+      <stop offset="1" stop-color="#F1E7DA"/>
+    </linearGradient>
+    <radialGradient id="glowGradient" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(930 140) rotate(132.561) scale(421.883 461.674)">
+      <stop stop-color="#6E63FF" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#6E63FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="paperGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(198 98) rotate(52.5541) scale(478.53 366.094)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="trayStroke" x1="76" y1="52" x2="1128" y2="578" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#DCCDBB" stop-opacity="0.9"/>
+    </linearGradient>
+    <linearGradient id="panelGradient" x1="742" y1="90" x2="1088" y2="496" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171717"/>
+      <stop offset="1" stop-color="#2D2945"/>
+    </linearGradient>
+    <filter id="shadowLg" x="22" y="20" width="1156" height="590" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="16"/>
+      <feGaussianBlur stdDeviation="18"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.259028 0 0 0 0 0.198898 0 0 0 0 0.122685 0 0 0 0.18 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+    </filter>
+    <filter id="shadowMd" x="708" y="62" width="418" height="486" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="12"/>
+      <feGaussianBlur stdDeviation="14"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.0901961 0 0 0 0 0.0784314 0 0 0 0 0.141176 0 0 0 0.22 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_1"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_1" result="shape"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="1200" height="630" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.035"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="#F5EEE4"/>
+  <rect width="1200" height="630" fill="url(#glowGradient)"/>
+
+  <g filter="url(#shadowLg)">
+    <rect x="58" y="42" width="1084" height="546" rx="44" fill="#E8DCCB"/>
+    <rect x="59" y="43" width="1082" height="544" rx="43" stroke="url(#trayStroke)" stroke-opacity="0.9" stroke-width="2"/>
+    <rect x="76" y="60" width="1048" height="510" rx="34" fill="url(#bgGradient)"/>
+    <rect x="76" y="60" width="1048" height="510" rx="34" stroke="#FFFDF8" stroke-opacity="0.9" stroke-width="1.5"/>
+    <rect x="76" y="60" width="1048" height="510" rx="34" fill="url(#paperGlow)"/>
+  </g>
+
+  <g opacity="0.55" filter="url(#grain)">
+    <rect width="1200" height="630" fill="#000000"/>
+  </g>
+
+  <rect x="116" y="112" width="184" height="34" rx="17" fill="#FFFFFF" fill-opacity="0.82"/>
+  <rect x="117" y="113" width="182" height="32" rx="16" stroke="#E6DBCD" stroke-width="1.5"/>
+  <text x="208" y="135" fill="#6B645D" font-family="Avenir Next, Avenir, sans-serif" font-size="12" font-weight="600" letter-spacing="2.8" text-anchor="middle">COLLABORATOR PORTAL</text>
+
+  <g transform="translate(118 168)">
+    <rect width="66" height="66" rx="20" fill="#4F46E5"/>
+    <rect x="13.75" y="11.75" width="45.5" height="31.5" rx="8.5" fill="#FFFDF9"/>
+    <path d="M19.5 43.5L12 58L33.5 43.5H19.5Z" fill="#FFFDF9"/>
+    <rect x="20.5" y="19.5" width="30.5" height="4.5" rx="2.25" fill="#4F46E5" fill-opacity="0.22"/>
+    <rect x="20.5" y="28.5" width="23.5" height="4.5" rx="2.25" fill="#4F46E5" fill-opacity="0.22"/>
+    <rect x="20.5" y="37.5" width="26.5" height="4.5" rx="2.25" fill="#4F46E5" fill-opacity="0.22"/>
+  </g>
+
+  <text x="116" y="274" fill="#161515" font-family="Iowan Old Style, Baskerville, serif" font-size="60" font-weight="400" letter-spacing="-1.5">
+    <tspan x="116" dy="0">Stakeholder feedback,</tspan>
+    <tspan x="116" dy="66">structured and</tspan>
+    <tspan x="116" dy="66">in GitHub.</tspan>
+  </text>
+
+  <text x="118" y="438" fill="#5F5A55" font-family="Avenir Next, Avenir, sans-serif" font-size="22" font-weight="500" letter-spacing="-0.15">
+    <tspan x="118" dy="0">Share a link for collaborators, refine stories with context,</tspan>
+    <tspan x="118" dy="32">and open GitHub issues only once the team accepts the work.</tspan>
+  </text>
+
+  <g transform="translate(118 502)">
+    <rect width="236" height="62" rx="31" fill="#151515"/>
+    <rect x="1" y="1" width="234" height="60" rx="30" stroke="#2C2B2B" stroke-width="1.5"/>
+    <text x="34" y="39" fill="#FFFDF8" font-family="Avenir Next, Avenir, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.2">Share a link</text>
+    <g transform="translate(178 13)">
+      <rect width="36" height="36" rx="18" fill="#2D2A42"/>
+      <path d="M12 24L24 12" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M15 12H24V21" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  <text x="382" y="543" fill="#6A645E" font-family="Avenir Next, Avenir, sans-serif" font-size="16" font-weight="500" letter-spacing="-0.15">No GitHub account needed for stakeholders.</text>
+
+  <g filter="url(#shadowMd)">
+    <rect x="724" y="78" width="384" height="470" rx="34" fill="#D8CCBE"/>
+    <rect x="739" y="93" width="354" height="440" rx="28" fill="url(#panelGradient)"/>
+    <rect x="739.75" y="93.75" width="352.5" height="438.5" rx="27.25" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="1.5"/>
+  </g>
+
+  <text x="774" y="140" fill="#F6EEE4" font-family="Avenir Next, Avenir, sans-serif" font-size="13" font-weight="600" letter-spacing="2.6">TRIAGE INBOX</text>
+  <text x="774" y="175" fill="#9E96BA" font-family="Avenir Next, Avenir, sans-serif" font-size="18" font-weight="500" letter-spacing="-0.15">Accepted only when it is actionable.</text>
+
+  <g transform="translate(774 210)">
+    <rect width="286" height="84" rx="24" fill="#F7F3EC"/>
+    <rect x="1" y="1" width="284" height="82" rx="23" stroke="#F4EADB" stroke-width="1.5"/>
+    <text x="24" y="34" fill="#171717" font-family="Avenir Next, Avenir, sans-serif" font-size="18" font-weight="600" letter-spacing="-0.2">Delivery dates</text>
+    <text x="24" y="58" fill="#706B66" font-family="Avenir Next, Avenir, sans-serif" font-size="15" font-weight="500">Priya K.  ·  Storefront</text>
+    <rect x="192" y="20" width="70" height="24" rx="12" fill="#E4F4EA"/>
+    <text x="227" y="36" fill="#256E4F" font-family="Avenir Next, Avenir, sans-serif" font-size="10" font-weight="700" letter-spacing="1.1" text-anchor="middle">ACCEPTED</text>
+  </g>
+
+  <g transform="translate(804 316)">
+    <rect width="256" height="76" rx="22" fill="#241F38"/>
+    <rect x="0.75" y="0.75" width="254.5" height="74.5" rx="21.25" stroke="#FFFFFF" stroke-opacity="0.08" stroke-width="1.5"/>
+    <text x="22" y="31" fill="#F8F5EF" font-family="Avenir Next, Avenir, sans-serif" font-size="18" font-weight="600" letter-spacing="-0.2">Export submissions as CSV</text>
+    <text x="22" y="54" fill="#A69FC0" font-family="Avenir Next, Avenir, sans-serif" font-size="14" font-weight="500">Tom B.  ·  Horizon App</text>
+    <rect x="176" y="19" width="62" height="22" rx="11" fill="#2E2946"/>
+    <text x="207" y="34" fill="#D8D2EE" font-family="Avenir Next, Avenir, sans-serif" font-size="10" font-weight="700" letter-spacing="1.1" text-anchor="middle">PENDING</text>
+  </g>
+
+  <g transform="translate(758 414)">
+    <rect width="302" height="90" rx="26" fill="#F3ECE2"/>
+    <rect x="1" y="1" width="300" height="88" rx="25" stroke="#E8DAC7" stroke-width="1.5"/>
+    <text x="24" y="33" fill="#171717" font-family="Avenir Next, Avenir, sans-serif" font-size="18" font-weight="600" letter-spacing="-0.2">Developer workflow</text>
+    <text x="24" y="58" fill="#6C655E" font-family="Avenir Next, Avenir, sans-serif" font-size="14.5" font-weight="500">Refine stories, accept them, then open the issue.</text>
+    <rect x="24" y="69" width="122" height="2.5" rx="1.25" fill="#4F46E5" fill-opacity="0.35"/>
+    <rect x="152" y="69" width="72" height="2.5" rx="1.25" fill="#4F46E5" fill-opacity="0.2"/>
+    <rect x="230" y="69" width="48" height="2.5" rx="1.25" fill="#4F46E5" fill-opacity="0.12"/>
+  </g>
+</svg>
