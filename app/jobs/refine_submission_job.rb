@@ -6,6 +6,8 @@ class RefineSubmissionJob < ApplicationJob
     return unless submission.refinement_initial_due? || awaiting_initial_reply?(submission)
     return mark_failed!(submission) unless LlmClient.configured?
 
+    ensure_repo_clone!(submission.project)
+
     submission.update!(refinement_status: "processing")
     SubmissionRefiner.new(submission).refine!
     submission.update!(refinement_status: "completed")
@@ -17,6 +19,12 @@ class RefineSubmissionJob < ApplicationJob
   end
 
   private
+
+  def ensure_repo_clone!(project)
+    GithubRepoClone.new(project).ensure!
+  rescue StandardError => e
+    Rails.logger.warn("[RefineSubmissionJob] GitHub clone failed: #{e.class}: #{e.message}")
+  end
 
   def awaiting_initial_reply?(submission)
     submission.refinement_status == "processing" &&

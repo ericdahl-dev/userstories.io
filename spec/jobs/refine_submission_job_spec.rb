@@ -22,8 +22,24 @@ RSpec.describe RefineSubmissionJob, type: :job do
 
     it "refines the submission and marks it completed" do
       refiner = instance_double(SubmissionRefiner, refine!: true)
+      clone_service = instance_double(GithubRepoClone, ensure!: true)
 
       allow(LlmClient).to receive(:configured?).and_return(true)
+      allow(GithubRepoClone).to receive(:new).with(submission.project).and_return(clone_service)
+      allow(SubmissionRefiner).to receive(:new).with(submission).and_return(refiner)
+
+      described_class.perform_now(submission)
+
+      expect(submission.reload.refinement_status).to eq("completed")
+      expect(clone_service).to have_received(:ensure!)
+      expect(refiner).to have_received(:refine!)
+    end
+
+    it "continues refinement when cloning fails" do
+      refiner = instance_double(SubmissionRefiner, refine!: true)
+
+      allow(LlmClient).to receive(:configured?).and_return(true)
+      allow(GithubRepoClone).to receive(:new).and_raise(StandardError, "git missing")
       allow(SubmissionRefiner).to receive(:new).with(submission).and_return(refiner)
 
       described_class.perform_now(submission)
