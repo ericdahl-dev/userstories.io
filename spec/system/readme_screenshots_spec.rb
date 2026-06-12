@@ -5,7 +5,7 @@
 
 require "rails_helper"
 
-RSpec.describe "README screenshots", type: :system, js: true do
+RSpec.describe "README screenshots", :screenshot, type: :system, js: true do
   include Warden::Test::Helpers
 
   OUTPUT = Rails.root.join("docs/screenshots")

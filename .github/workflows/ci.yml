@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:16
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -74,4 +74,4 @@ jobs:
       - name: Build assets
         run: bin/rails assets:precompile
       - name: Run tests
-        run: bundle exec rspec
+        run: bundle exec rspec -t '~screenshot'

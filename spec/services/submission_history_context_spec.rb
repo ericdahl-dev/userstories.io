@@ -15,6 +15,13 @@ RSpec.describe SubmissionHistoryContext do
 
   subject(:context) { described_class.new(submission) }
 
+  def normalized_vector(*components)
+    vector = Array.new(Submission::EMBEDDING_DIMENSIONS, 0.0)
+    components.each_with_index { |value, index| vector[index] = value }
+    magnitude = Math.sqrt(vector.sum { |value| value * value })
+    vector.map { |value| value / magnitude }
+  end
+
   it "excludes current and dismissed submissions" do
     prior = create(:submission, project: project, title: "Prior story", status: "accepted")
     create(:submission, project: project, status: "dismissed", title: "Dismissed story")
@@ -36,6 +43,22 @@ RSpec.describe SubmissionHistoryContext do
 
     expect(mine[:same_collaborator]).to be true
     expect(theirs[:same_collaborator]).to be false
+  end
+
+  it "prefers semantically similar submissions when embeddings exist" do
+    submission.update!(embedding: normalized_vector(1.0))
+
+    similar = create(:submission, project: project, title: "Night theme", body: "Dark UI")
+    similar.update!(embedding: normalized_vector(1.0, 0.05))
+
+    unrelated = create(:submission, project: project, title: "Export CSV", body: "Download data")
+    unrelated.update!(embedding: normalized_vector(0.0, 1.0))
+
+    entries = context.fetch_entries
+
+    expect(entries.first[:title]).to eq("Night theme")
+    expect(entries.first[:similarity_score]).to be_present
+    expect(entries.map { |e| e[:title] }).not_to include(unrelated.title)
   end
 
   describe "#similar_to" do
@@ -105,6 +128,23 @@ RSpec.describe SubmissionHistoryContext do
       )
 
       expect(context.similar_to.map { |match| match[:id] }).not_to include(cross_project.id)
+    end
+
+    it "prefers embedding matches when available" do
+      submission.update!(embedding: normalized_vector(1.0))
+
+      similar = create(:submission, project: project, collaborator: create(:collaborator, name: "brave-otter-77"),
+                                   title: "Night theme", body: "Dark UI", status: "accepted")
+      similar.update!(embedding: normalized_vector(1.0, 0.05))
+
+      unrelated = create(:submission, project: project, title: "Export CSV", body: "Download data")
+      unrelated.update!(embedding: normalized_vector(0.0, 1.0))
+
+      matches = context.similar_to
+
+      expect(matches.map { |match| match[:title] }).to eq([ "Night theme" ])
+      expect(matches.first[:submitter_label]).to eq("brave-otter-77")
+      expect(matches.first[:score]).to be >= SubmissionSimilarityFinder::MIN_SIMILARITY_SCORE
     end
   end
 
